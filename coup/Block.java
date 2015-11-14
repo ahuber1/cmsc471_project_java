@@ -7,7 +7,7 @@ import coup.cards.Card;
 public abstract class Block extends Effect {
 	
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game) {
 		game.stepStack.clear(); // clear stack to action is not executed
 		return true;
 	}

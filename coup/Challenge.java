@@ -7,8 +7,8 @@ import coup.cards.Card;
 public class Challenge extends Effect {
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorize) {
-		// TODO compensate for theorizing
+	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game) {
+		
 		instigator = game.findPlayer(instigator);
 		victim = game.findPlayer(victim);
 		
