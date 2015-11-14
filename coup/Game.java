@@ -36,26 +36,9 @@ public class Game {
 		this.players = copyPlayers(game.players);
 		this.currentPlayer = game.currentPlayer;
 		this.deckOfCards = new ConcurrentLinkedQueue<Card>(game.deckOfCards);
-		this.stepStack = copyStack(game.stepStack); 
+		this.stepStack = Utilities.copyStack(game.stepStack); 
 		this.backupStepStack = new Stack<Step>();
-		this.backupStepStack = copyStack(game.backupStepStack);
-	}
-	
-	private static <T> Stack<T> copyStack(Stack<T> originalStack) {
-		Stack<T> tempStack = new Stack<T>();
-		Stack<T> newStack = new Stack<T>();
-		
-		while(!originalStack.isEmpty()) {
-			tempStack.add(originalStack.pop());
-		}
-		
-		while(!tempStack.isEmpty()) {
-			T data = tempStack.pop();
-			originalStack.add(data);
-			newStack.add(data);
-		}
-		
-		return newStack;
+		this.backupStepStack = Utilities.copyStack(game.backupStepStack);
 	}
 	
 	private Player[] copyPlayers(Player[] originals) {
@@ -129,7 +112,7 @@ public class Game {
 			game = game.parentGame;
 		}
 		
-		return depth;
+		return depth - 1;
 	}
 
 	public Player[] getOtherPlayersExcept(Player target) {
@@ -166,12 +149,12 @@ public class Game {
 
 	public void backupStack() {
 		backupStepStack.clear();
-		backupStepStack = copyStack(stepStack);
+		backupStepStack = Utilities.copyStack(stepStack);
 	}
 
 	public void restoreStepStack() {
 		this.stepStack.clear();
-		stepStack = copyStack(backupStepStack);
+		stepStack = Utilities.copyStack(backupStepStack);
 	}
 	
 	@Override
@@ -223,7 +206,7 @@ public class Game {
 		for (Step step : backupStepStack) {
 			builder.append(String.format("\tInstigator: %s\n", step.instigator));
 			builder.append(String.format("\tVictim: %s\n", step.victim));
-			builder.append(String.format("\tAI: %d\n", step.ai.name));
+			builder.append(String.format("\tAI: %s\n", step.ai.name));
 			builder.append(String.format("\tEffect: %s\n", step.effect.getDescription()));
 			builder.append("\tCards to Exchange:\n");
 			
@@ -237,5 +220,36 @@ public class Game {
 		}		
 		
 		return builder.toString();
+	}
+
+	public int calculateHeuristic(Player inquirer, Game origGame) {
+		int x = 0;
+		
+		for (Player player : players) {
+			
+			int coinsGained = player.numCoins - origGame.findPlayer(player).numCoins;
+			int cardsLost = origGame.findPlayer(player).cards.size() - player.cards.size();
+			
+			if (player.equals(inquirer)) {
+				x += (players.length * players.length * coinsGained) + cardsLost;
+			}
+			else {
+				x += coinsGained + (players.length * players.length * cardsLost);
+			}
+		}
+		
+		return x;
+	}
+
+	public Game root() {
+		if (parentGame == null)
+			return this;
+		else {
+			Game game = this;
+			while (game.parentGame.parentGame != null) {
+				game = game.parentGame;
+			}
+			return game;
+		}
 	}
 }

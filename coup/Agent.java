@@ -1,7 +1,11 @@
 package coup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import coup.actions.Action;
@@ -17,6 +21,7 @@ import coup.cards.Duke;
 
 public class Agent extends Player {
 	
+	public static final int MAX_DEPTH = 3;
 	public static final Action[] ACTIONS = {new Income(), new ForeignAid(), new Coup()};
 	public static final Card[] CARDS = {new Duke(), new Assassin(), new Ambassador(), new Captain(), new Contessa()};
 	
@@ -27,20 +32,21 @@ public class Agent extends Player {
 	public Game nextMove(Game game) {
 		ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
 		q.add(game);
-		Game g1 = nextMove(q);
-		System.out.println("----------------------------------------------------------------------");
-		System.out.printf("%s found a a goal state %d move(s) in advance\n", this.name, g1.depth());
-		Stack<Game> stack = new Stack<Game>();
+		Game g1 = nextMove(q, game).root();
+		//System.out.println("----------------------------------------------------------------------");
+		//System.out.printf("%s found a a goal state %d move(s) in advance\n", this.name, g1.depth());
 		
-		while (g1.parentGame != game) {
-			stack.add(g1);
-			g1 = g1.parentGame;
-		}
+		for (Step step : g1.backupStepStack)
+			System.out.println(step.effect.getDescription());
 		
-		while (!stack.isEmpty()) {
-			System.out.printf(stack.pop().toString());
-			if (!stack.isEmpty()) {
-				System.out.println("                                  ***                                 ");
+		System.out.println();
+		
+		while(true) {
+			try {
+				Thread.sleep(500);
+				break;
+			} catch (InterruptedException e) {
+				// Keep trying...
 			}
 		}
 		
@@ -50,29 +56,101 @@ public class Agent extends Player {
 	private static int depth = 0;
 	private static int counter = 0;
 
-	private Game nextMove(ConcurrentLinkedQueue<Game> q) {
+	private Game nextMove(ConcurrentLinkedQueue<Game> q, Game origGame) {
 		
 		while (!q.isEmpty()) {
 			Game g = q.poll();
+			
 			int d = g.depth();
-			
-			if (d != depth) {
-				System.out.printf("\n%s is considering possible moves %d move(s) in advance\n", this.name, d);
-				depth = d;
-				counter = 1;
-			}
-			else {
-				counter++;
-				System.out.print(counter);
-				System.out.print("\r");
-			}
-			
 			
 			if (g.winner() != null && g.winner().equals(this))
 				return g;
 			else if (g.winner() != null && !g.winner().equals(this)) // another player won; don't expand
 				continue; // analyze another state
-			else {
+			else if (d == MAX_DEPTH) {
+				//System.out.printf("%s is calculating finding the best solution with a heuristic\n", this.name);
+				TreeMap<Integer, ArrayList<Game>> games = new TreeMap<Integer, ArrayList<Game>>();
+				int count = 0;
+				
+				while(!q.isEmpty()) {
+					count++;
+					
+					//System.out.print(count);
+					//System.out.print("\r");
+					
+					int heuristicValue = g.calculateHeuristic(this, origGame);
+					ArrayList<Game> list = games.get(heuristicValue);
+					
+					if (list == null)
+						list = new ArrayList<Game>();
+					
+					list.add(g);
+					games.put(heuristicValue, list);
+					g = q.poll();
+				}
+				
+				Set<Integer> keySet = games.keySet();
+				Integer[] keyArr = keySet.toArray(new Integer[keySet.size()]);
+				Arrays.sort(keyArr);
+				int maxNumIndicies = 5;
+				Game[] bestGames = new Game[maxNumIndicies];
+				int k = 0;
+				
+				for (int i = keyArr.length - 1; i >= 0; i--) {
+					int key = keyArr[i];
+					ArrayList<Game> list = games.get(key);
+					for (int j = 0; j < list.size() && k < bestGames.length; j++) {
+						Game game = list.get(j);
+						if (k == 0) {
+							bestGames[k] = game;
+							k++;
+						}
+						else {
+							Game root1 = bestGames[k - 1].root();
+							Game root2 = game.root();
+							Stack<Step> stack1 = Utilities.copyStack(root1.backupStepStack);
+							Stack<Step> stack2 = Utilities.copyStack(root2.backupStepStack);
+							Step step1 = null;
+							Step step2 = null;
+							
+							while(!stack1.isEmpty())
+								step1 = stack1.pop();
+							
+							while(!stack2.isEmpty())
+								step2 = stack2.pop();
+							
+							if(!step1.effect.equals(step2.effect)) {
+								bestGames[k] = game;
+								k++;
+							}
+							
+						}
+					}
+				}
+				
+				Random rand = new Random();
+				Game bestMove = null;
+				
+				while (bestMove == null)
+					bestMove = bestGames[rand.nextInt(bestGames.length)];
+				
+				//System.out.printf("\n%s found the best move\n", this.name);
+				
+				return bestMove;
+			}
+			else {	
+				
+				if (d != depth) {
+					//System.out.printf("\n%s is considering possible moves %d move(s) in advance\n", this.name, d);
+					depth = d;
+					counter = 1;
+				}
+				else {
+					counter++;
+					//System.out.print(counter);
+					//System.out.print("\r");
+				}
+				
 				Player p = g.players[g.currentPlayer];
 				
 				for (Action action : ACTIONS) {
@@ -144,7 +222,7 @@ public class Agent extends Player {
 			q.addAll(effect.theorize(null, game.players[game.currentPlayer], this, ai, cardsToExchange, game));
 		}
 		
-		Game g1 = nextMove(q);
+		Game g1 = nextMove(q, game);
 		
 		while (g1.parentGame != game)
 			g1 = g1.parentGame;
