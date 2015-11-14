@@ -10,14 +10,17 @@ public class Driver {
 		while (game.winner() == null) {
 			game = nextIteration(game);
 		}
+		
+		System.out.printf("%d won!\n", game.winner().name);
 	}
 	
 	public static Game nextIteration(Game game) {
+		System.out.printf("It is %s's turn\n", game.players[game.currentPlayer].name);
 		Game nextMove = game.players[game.currentPlayer].nextMove(game);
 		nextMove.restoreStepStack();
 		while(!nextMove.stepStack.isEmpty()) {
 			Step step = nextMove.stepStack.pop();
-			step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, nextMove);
+			step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, nextMove, false);
 		}
 		nextMove.incrementPlayer();
 		nextMove.giveCoinsToAllPlayers(2);

@@ -173,4 +173,69 @@ public class Game {
 		this.stepStack.clear();
 		stepStack = copyStack(backupStepStack);
 	}
+	
+	@Override
+	public String toString() {
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append(String.format("Depth: %d\n", depth()));
+		builder.append(String.format("Current Player: %s\n", players[currentPlayer]));
+		builder.append("Players: \n");
+		
+		for (Player player : players) {
+			builder.append(String.format("\tPlayer Name: %s\n", player.name));
+			builder.append(String.format("\tNum Coins: %d\n", player.numCoins));
+			builder.append("\tCards:\n");
+			
+			for (Card card : player.cards) {
+				builder.append(String.format("\t\t%s\n", card.getName()));
+			}
+			
+			builder.append("\n");
+		}
+		
+		builder.append("Deck:\n");
+		
+		for (Card card : deckOfCards) {
+			builder.append(String.format("\t%s\n", card.getName()));
+		}
+		
+		builder.append("Step Stack: \n");
+		
+		for (Step step : stepStack) {
+			builder.append(String.format("\tInstigator: %s\n", step.instigator));
+			builder.append(String.format("\tVictim: %s\n", step.victim));
+			builder.append(String.format("\tAI: %d\n", step.ai.name));
+			builder.append(String.format("\tEffect: %s\n", step.effect.getDescription()));
+			builder.append("\tCards to Exchange:\n");
+			
+			if (step.cardsToChallenge != null) {
+				for(Card card : step.cardsToChallenge) {
+					builder.append(String.format("\t\t%s\n", card.getName()));
+				}
+				builder.append("\n");
+			}
+			builder.append("\n");
+		}
+		
+		builder.append("Backup: \n");
+		
+		for (Step step : backupStepStack) {
+			builder.append(String.format("\tInstigator: %s\n", step.instigator));
+			builder.append(String.format("\tVictim: %s\n", step.victim));
+			builder.append(String.format("\tAI: %d\n", step.ai.name));
+			builder.append(String.format("\tEffect: %s\n", step.effect.getDescription()));
+			builder.append("\tCards to Exchange:\n");
+			
+			if (step.cardsToChallenge != null) {
+				for(Card card : step.cardsToChallenge) {
+					builder.append(String.format("\t\t%s\n", card.getName()));
+				}
+				builder.append("\n");
+			}
+			builder.append("\n");
+		}		
+		
+		return builder.toString();
+	}
 }

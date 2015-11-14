@@ -13,26 +13,8 @@ public class Coup extends Action {
 	private final static int NUM_COINS = 7;
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game) {
-		instigator = game.findPlayer(instigator);
-		victim = game.findPlayer(victim);
-		
-		Player temp = game.findPlayer(ai);
-		ai = temp == null ? null : (Agent) temp;
-		
-		if (instigator.numCoins >= NUM_COINS) {
-			instigator.numCoins -= NUM_COINS;
-			Card revealedCard;
-			if (cardsToExchange == null || cardsToExchange.length > 1)
-				revealedCard = victim.revealCard(game, ai, this);
-			else 
-				revealedCard = cardsToExchange[0];
-			
-			victim.cards.remove(revealedCard);
-			return true;
-		}
-		else
-			return false;
+	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+		return Assassinate.execute(this, NUM_COINS, instigator, victim, ai, cardsToExchange, game, theorizing);
 	}
 
 	@Override

@@ -24,6 +24,11 @@ public abstract class Player {
 			return this.name.equals(((Player) obj).name);
 	}
 	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 	public abstract Card revealCard(Game game, Agent ai, Effect effect);
 	public abstract Player copy();
 	public abstract Card[] getPossibleCardsToAssasinate(Game game, Agent ai);

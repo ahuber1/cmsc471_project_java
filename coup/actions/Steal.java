@@ -15,7 +15,7 @@ public class Steal extends Action {
 	private static final int NUM_COINS = 2;
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game) {
+	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
 		
 		instigator = game.findPlayer(instigator);
 		victim = game.findPlayer(victim);

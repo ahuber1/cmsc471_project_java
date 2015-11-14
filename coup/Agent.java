@@ -1,6 +1,7 @@
 package coup;
 
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import coup.actions.Action;
@@ -16,8 +17,8 @@ import coup.cards.Duke;
 
 public class Agent extends Player {
 	
-	private static final Action[] ACTIONS = {new Income(), new ForeignAid(), new Coup()};
-	private static final Card[] CARDS = {new Duke(), new Assassin(), new Ambassador(), new Captain(), new Contessa()};
+	public static final Action[] ACTIONS = {new Income(), new ForeignAid(), new Coup()};
+	public static final Card[] CARDS = {new Duke(), new Assassin(), new Ambassador(), new Captain(), new Contessa()};
 	
 	public Agent(String name) {
 		super(name);
@@ -27,18 +28,45 @@ public class Agent extends Player {
 		ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
 		q.add(game);
 		Game g1 = nextMove(q);
+		System.out.println("----------------------------------------------------------------------");
+		System.out.printf("%s found a a goal state %d move(s) in advance\n", this.name, g1.depth());
+		Stack<Game> stack = new Stack<Game>();
 		
-		while (g1.parentGame != game)
+		while (g1.parentGame != game) {
+			stack.add(g1);
 			g1 = g1.parentGame;
+		}
+		
+		while (!stack.isEmpty()) {
+			System.out.printf(stack.pop().toString());
+			if (!stack.isEmpty()) {
+				System.out.println("                                  ***                                 ");
+			}
+		}
 		
 		return g1;
 	}
+	
+	private static int depth = 0;
+	private static int counter = 0;
 
 	private Game nextMove(ConcurrentLinkedQueue<Game> q) {
 		
 		while (!q.isEmpty()) {
 			Game g = q.poll();
-			System.out.println(g.depth());
+			int d = g.depth();
+			
+			if (d != depth) {
+				System.out.printf("\n%s is considering possible moves %d move(s) in advance\n", this.name, d);
+				depth = d;
+				counter = 1;
+			}
+			else {
+				counter++;
+				System.out.print(counter);
+				System.out.print("\r");
+			}
+			
 			
 			if (g.winner() != null && g.winner().equals(this))
 				return g;
@@ -56,13 +84,13 @@ public class Agent extends Player {
 							game.backupStack();
 							//game.describeStack();
 							Step step = game.stepStack.pop();
-							c = step.effect.execute(step.instigator, step.victim, this, step.cardsToChallenge, game);
+							c = step.effect.execute(step.instigator, step.victim, this, step.cardsToChallenge, game, true);
 						}
 						if (c) { // if all steps were successfully completed
 							game.incrementPlayer();
 							game.giveCoinsToAllPlayers(2);
 							game.parentGame = g;
-							System.out.printf("stack-size = %d\tbackup-size = %d\n", game.stepStack.size(), game.backupStepStack.size());
+							//System.out.printf("stack-size = %d\tbackup-size = %d\n", game.stepStack.size(), game.backupStepStack.size());
 							q.add(game);
 						}
 					}
@@ -79,14 +107,14 @@ public class Agent extends Player {
 								//game.describeStack();
 								game.backupStack();
 								Step step = game.stepStack.pop();
-								c = step.effect.execute(step.instigator, step.victim, this, step.cardsToChallenge, game);
+								c = step.effect.execute(step.instigator, step.victim, this, step.cardsToChallenge, game, true);
 							}
 							if (c) { // if all steps were successfully completed
 								game.incrementPlayer();
 								game.giveCoinsToAllPlayers(2);
 								assert game.stepStack.isEmpty();
 								game.parentGame = g;
-								System.out.printf("stack-size = %d\tbackup-size = %d\n", game.stepStack.size(), game.backupStepStack.size());
+								//System.out.printf("stack-size = %d\tbackup-size = %d\n", game.stepStack.size(), game.backupStepStack.size());
 								q.add(game);
 							}
 						}

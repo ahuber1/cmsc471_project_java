@@ -12,7 +12,7 @@ import coup.cards.Card;
 public class Exchange extends Action {
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game) {
+	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
 		instigator = game.findPlayer(instigator);
 		
 		if (game.deckOfCards.size() >= 2) {

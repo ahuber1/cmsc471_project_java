@@ -7,15 +7,22 @@ import coup.cards.Card;
 public class Challenge extends Effect {
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game) {
-		
+	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
 		instigator = game.findPlayer(instigator);
 		victim = game.findPlayer(victim);
 		
-		if (victim.cards.contains(game.stepStack.peek().effect.getCard()))
-			victim.cards.clear();
-		else
-			instigator.cards.clear();
+		Player temp = game.findPlayer(ai);
+		ai = temp == null ? null : (Agent) temp;
+		
+		if (theorizing) { // if we are theorizing, assume the worst-case scenario
+			ai.cards.clear(); // assume worst-case scenario happens and the agent looses the game
+		}
+		else { // if we are not theorizing, investigate who would actually lose
+			if (victim.cards.contains(game.stepStack.peek().effect.getCard()))
+				victim.cards.clear();
+			else
+				instigator.cards.clear();
+		}
 		
 		game.stepStack.clear(); // clear the step stack; nothing else needs to be done; this challenge determines the future state of the game
 		
