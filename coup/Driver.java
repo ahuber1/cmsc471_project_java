@@ -17,7 +17,7 @@ public class Driver {
 		nextMove.restoreStepStack();
 		while(!nextMove.stepStack.isEmpty()) {
 			Step step = nextMove.stepStack.pop();
-			step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, nextMove);
+			step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, nextMove, false);
 		}
 		nextMove.incrementPlayer();
 		nextMove.giveCoinsToAllPlayers(2);

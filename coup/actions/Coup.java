@@ -13,7 +13,8 @@ public class Coup extends Action {
 	private final static int NUM_COINS = 7;
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game) {
+	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+		// TODO add capability for theorizing
 		instigator = game.findPlayer(instigator);
 		victim = game.findPlayer(victim);
 		

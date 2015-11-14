@@ -56,7 +56,7 @@ public class Agent extends Player {
 							game.backupStack();
 							//game.describeStack();
 							Step step = game.stepStack.pop();
-							c = step.effect.execute(step.instigator, step.victim, this, step.cardsToChallenge, game);
+							c = step.effect.execute(step.instigator, step.victim, this, step.cardsToChallenge, game, true);
 						}
 						if (c) { // if all steps were successfully completed
 							game.incrementPlayer();
@@ -79,7 +79,7 @@ public class Agent extends Player {
 								//game.describeStack();
 								game.backupStack();
 								Step step = game.stepStack.pop();
-								c = step.effect.execute(step.instigator, step.victim, this, step.cardsToChallenge, game);
+								c = step.effect.execute(step.instigator, step.victim, this, step.cardsToChallenge, game, true);
 							}
 							if (c) { // if all steps were successfully completed
 								game.incrementPlayer();
