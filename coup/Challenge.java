@@ -24,7 +24,7 @@ public class Challenge extends Effect {
 				victim.looses();
 		}
 		
-		game.stepStack.clear(); // clear the step stack; nothing else needs to be done; this challenge determines the future state of the game
+		game.stepStack.pop(); // pop the subsequent step; it should not be executed
 		
 		return true;
 	}
