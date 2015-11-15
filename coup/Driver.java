@@ -11,15 +11,15 @@ public class Driver {
 	public static void main(String[] args) {
 		
 		long timeDifferences = 0;
-		File file = new File("output.txt");
-		PrintStream stream = null;
-		try {
-			stream = new PrintStream(file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			System.exit(-2);
-		}
-		System.setOut(stream);
+//		File file = new File("output.txt");
+//		PrintStream stream = null;
+//		try {
+//			stream = new PrintStream(file);
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//			System.exit(-2);
+//		}
+//		System.setOut(stream);
 		for (int i = 0; i < 10; i++) {
 			long startTime = System.currentTimeMillis();
 			Game game = new Game(new Agent("Agent 1"), 
@@ -32,8 +32,11 @@ public class Driver {
 			game.dealCards();
 			game.giveCoinsToAllPlayers(2);
 			
+			int counter = 1;
 			while (game.winner() == null) {
 				game = nextIteration(game);
+				System.out.printf("Iteration Counter: %d\n", counter);
+				counter++;
 			}
 			
 			System.out.printf("%s won!\n", game.winner().name);
@@ -46,7 +49,7 @@ public class Driver {
 		
 		System.out.printf("Average time elapsed per game (in seconds): %.2f\n", average);
 		
-		stream.close();
+		//stream.close();
 	}
 	
 	public static Game nextIteration(Game game) {
@@ -75,8 +78,12 @@ public class Driver {
 				game.stepStack.push(counteractionStep);
 				Game challenge = game.players[game.currentPlayer].requestChallenge(counteractionStep, game, game.players[game.currentPlayer]);
 				
-				if (challenge != null) {
+				if (challenge != null)
 					challenge.restoreStepStack();
+				
+				// If the current player found a state he/she desires and it will challenge (i.e., the step stack has 3 items in it)
+				if (challenge != null && challenge.stepStack.size() == 3) { 
+					//challenge.restoreStepStack();
 					Step challengeStep = challenge.stepStack.peek();
 					game.stepStack.push(challengeStep);
 				}

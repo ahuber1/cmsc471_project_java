@@ -60,7 +60,9 @@ public class Game {
 	
 	public void giveCoinsToAllPlayers(int numCoins) {
 		for (Player player : players) {
-			player.numCoins += numCoins;
+			if (!player.lost()) {
+				player.numCoins += numCoins;
+			}
 		}
 	}
 	
@@ -128,7 +130,7 @@ public class Game {
 		ArrayList<Player> others = new ArrayList<Player>();
 		
 		for (Player player : players) {
-			if (!player.equals(target) && !player.lose()) {
+			if (!player.equals(target) && !player.lost()) {
 				others.add(player);
 			}
 		}
@@ -173,17 +175,20 @@ public class Game {
 		builder.append(String.format("Depth: %d\n", depth()));
 		builder.append(String.format("Current Player: %s\n", players[currentPlayer]));
 		builder.append("Players: \n");
-		
+		int activePlayers = 0;
 		for (Player player : players) {
-			builder.append(String.format("\tPlayer Name: %s\n", player.name));
-			builder.append(String.format("\tNum Coins: %d\n", player.numCoins));
-			builder.append("\tCards:\n");
-			
-			for (Card card : player.cards) {
-				builder.append(String.format("\t\t%s\n", card.getName()));
+			if (!player.lost()) {
+				builder.append(String.format("\tPlayer Name: %s\n", player.name));
+				builder.append(String.format("\tNum Coins: %d\n", player.numCoins));
+				builder.append("\tCards:\n");
+				
+				for (Card card : player.cards) {
+					builder.append(String.format("\t\t%s\n", card.getName()));
+				}
+				
+				builder.append("\n");
+				activePlayers++;
 			}
-			
-			builder.append("\n");
 		}
 		
 		builder.append("Deck:\n");
@@ -227,6 +232,8 @@ public class Game {
 			}
 			builder.append("\n");
 		}		
+		
+		builder.append(String.format("Active Players: %d", activePlayers));
 		
 		return builder.toString();
 	}

@@ -41,7 +41,7 @@ public abstract class Player {
 		this.numCoins = 0;
 	}
 
-	public boolean lose() {
+	public boolean lost() {
 		return cards.size() == 0;
 	}
 }
