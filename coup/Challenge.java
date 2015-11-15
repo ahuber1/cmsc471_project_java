@@ -19,9 +19,9 @@ public class Challenge extends Effect {
 		}
 		else { // if we are not theorizing, investigate who would actually lose
 			if (victim.cards.contains(game.stepStack.peek().effect.getCard()))
-				victim.cards.clear();
+				instigator.looses();
 			else
-				instigator.cards.clear();
+				victim.looses();
 		}
 		
 		game.stepStack.clear(); // clear the step stack; nothing else needs to be done; this challenge determines the future state of the game

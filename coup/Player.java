@@ -35,4 +35,9 @@ public abstract class Player {
 	public abstract Game nextMove(Game game);
 	public abstract Game requestCounteraction(Step actionStep, Game game, Player instigatorOfCounteraction);
 	public abstract Game requestChallenge(Step counteractionStep, Game game, Player instigatorOfChallenge);
+
+	public void looses() {
+		this.cards.clear();
+		this.numCoins = 0;
+	}
 }
