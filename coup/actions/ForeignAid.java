@@ -15,17 +15,13 @@ public class ForeignAid extends Action {
 
 	@Override
 	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
-		
 		instigator = game.findPlayer(instigator);
-		victim = game.findPlayer(victim);
-		
-		if (victim.numCoins >= NUM_COINS) {
-			victim.numCoins -= NUM_COINS;
-			instigator.numCoins += NUM_COINS;
-			return true;
-		}
-		else
-			return false;
+//		victim = game.findPlayer(victim);
+//		
+//		Player temp = game.findPlayer(ai);
+//		ai = temp == null ? null : (Agent) temp;
+		instigator.numCoins += NUM_COINS;
+		return true;
 	}
 
 	@Override
@@ -47,14 +43,9 @@ public class ForeignAid extends Action {
 	@Override
 	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToChallenge,
 			Game game) {
-		Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
+		//Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
 		ArrayList<Game> list = new ArrayList<Game>();
-		
-		for (Player otherPlayer : otherPlayers) {
-			if (otherPlayer.numCoins >= NUM_COINS)
-				list.addAll(super.theorize(this, instigator, otherPlayer, ai, cardsToChallenge, game));
-		}
-		
+		list.addAll(super.theorize(this, instigator, null, ai, cardsToChallenge, game));
 		return list;
 	}
 }

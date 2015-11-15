@@ -24,8 +24,10 @@ public class Challenge extends Effect {
 				victim.looses();
 		}
 		
-		if (game.players[game.currentPlayer].lost())
+		if (!game.players[game.currentPlayer].lost())
 			game.stepStack.pop(); // pop the subsequent step; it should not be executed
+		else
+			game.stepStack.clear();
 		
 		return true;
 	}
