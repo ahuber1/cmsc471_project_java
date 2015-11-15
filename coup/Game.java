@@ -112,6 +112,9 @@ public class Game {
 		
 		if (this.currentPlayer == this.players.length)
 			this.currentPlayer = 0;
+		
+		if (this.players[this.currentPlayer].lost())
+			incrementPlayer(); // increment the player again
 	}
 
 	public int depth() {

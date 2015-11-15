@@ -20,7 +20,7 @@ public class Driver {
 //			System.exit(-2);
 //		}
 //		System.setOut(stream);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1; i++) {
 			long startTime = System.currentTimeMillis();
 			Game game = new Game(new Agent("Agent 1"), 
 					new Agent("Agent 2"), 
