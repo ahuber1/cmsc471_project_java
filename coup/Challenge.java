@@ -15,7 +15,7 @@ public class Challenge extends Effect {
 		ai = temp == null ? null : (Agent) temp;
 		
 		if (theorizing) { // if we are theorizing, assume the worst-case scenario
-			ai.cards.clear(); // assume worst-case scenario happens and the agent looses the game
+			ai.looses(); // assume worst-case scenario happens and the agent looses the game
 		}
 		else { // if we are not theorizing, investigate who would actually lose
 			if (victim.cards.contains(game.stepStack.peek().effect.getCard()))
@@ -24,7 +24,8 @@ public class Challenge extends Effect {
 				victim.looses();
 		}
 		
-		game.stepStack.pop(); // pop the subsequent step; it should not be executed
+		if (game.players[game.currentPlayer].lost())
+			game.stepStack.pop(); // pop the subsequent step; it should not be executed
 		
 		return true;
 	}
