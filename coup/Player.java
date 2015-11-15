@@ -40,4 +40,8 @@ public abstract class Player {
 		this.cards.clear();
 		this.numCoins = 0;
 	}
+
+	public boolean lose() {
+		return cards.size() == 0;
+	}
 }

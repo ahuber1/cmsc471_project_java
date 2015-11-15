@@ -128,7 +128,7 @@ public class Game {
 		ArrayList<Player> others = new ArrayList<Player>();
 		
 		for (Player player : players) {
-			if (!player.equals(target)) {
+			if (!player.equals(target) && !player.lose()) {
 				others.add(player);
 			}
 		}
