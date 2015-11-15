@@ -9,11 +9,13 @@ public abstract class Player {
 	public ArrayList<Card> cards;
 	public int numCoins;
 	public String name;
+	public boolean lost;
 	
 	public Player(String name) {
 		this.cards = new ArrayList<Card>();
 		this.numCoins = 0;
 		this.name = name;
+		this.lost = false;
 	}
 	
 	@Override
@@ -37,12 +39,13 @@ public abstract class Player {
 	public abstract Game requestChallenge(Step counteractionStep, Game game, Player instigatorOfChallenge);
 
 	public void looses() {
-		this.cards.clear();
-		this.numCoins = 0;
+		//this.cards.clear();
+		//this.numCoins = 0;
+		this.lost = true;
 	}
 
 	public boolean lost() {
-		return cards.size() == 0;
+		return lost;
 	}
 
 	public void stealCoins(int numCoins) {

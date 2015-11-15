@@ -14,7 +14,33 @@ public class Assassinate extends Action {
 
 	private static final int NUM_COINS = 3;
 	
+	public static void theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToExchange,
+			Game game, int numCoins, ArrayList<Game> list) {		
+		if (instigator.numCoins >= numCoins) {
+			Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
+			for (Player otherPlayer : otherPlayers) {
+				Card[] possibleCardsToAssasinate;
+				if (cardsToExchange == null || cardsToExchange.length > 1) {
+					possibleCardsToAssasinate = otherPlayer.getPossibleCardsToAssasinate(game, ai);
+				}
+				else {
+					possibleCardsToAssasinate = cardsToExchange;
+				}
+				
+				for (Card possibleCard : possibleCardsToAssasinate) {
+					cardsToExchange = new Card[1];
+					cardsToExchange[0] = possibleCard;
+					Action.theorize(parent, instigator, otherPlayer, ai, cardsToExchange, game, list);
+				}
+			}
+		}
+	}
+	
 	public static boolean execute(Effect effect, int numCoins, Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+		
+		if(theorizing == false)
+			System.out.printf("");
+		
 		instigator = game.findPlayer(instigator);
 		victim = game.findPlayer(victim);
 		
@@ -24,19 +50,21 @@ public class Assassinate extends Action {
 		if (instigator.numCoins >= numCoins) {
 			boolean isVictimAgent = victim.equals(ai);
 			
-			if (isVictimAgent || !(theorizing)) {
+			if (isVictimAgent && !(theorizing)) {
 				
-				Card cardToReveal;
+				Card cardToReveal = victim.revealCard(game, ai, effect);
 				
-				if (cardsToExchange != null && cardsToExchange.length == 1) { // if we are contemplating the possibility of removing a card
-					cardToReveal = cardsToExchange[0];
-				}
-				else {
-					cardToReveal = victim.revealCard(game, ai, effect);
-				}
+//				if (cardsToExchange != null && cardsToExchange.length == 1) { // if we are contemplating the possibility of removing a card
+//					cardToReveal = cardsToExchange[0];
+//				}
+//				else {
+//					
+//				}
 				
-				victim.cards.remove(cardToReveal);
-				return true;
+				return victim.cards.remove(cardToReveal);
+			}
+			else if (isVictimAgent) {
+				return victim.cards.contains(cardsToExchange[0]);
 			}
 			else {
 				if (victim.cards.size() > 0) {
@@ -72,26 +100,7 @@ public class Assassinate extends Action {
 	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToExchange,
 			Game game) {
 		ArrayList<Game> list = new ArrayList<Game>();
-		
-		if (instigator.numCoins >= NUM_COINS) {
-			Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
-			for (Player otherPlayer : otherPlayers) {
-				Card[] possibleCardsToAssasinate;
-				if (cardsToExchange == null || cardsToExchange.length > 1) {
-					possibleCardsToAssasinate = otherPlayer.getPossibleCardsToAssasinate(game, ai);
-				}
-				else {
-					possibleCardsToAssasinate = cardsToExchange;
-				}
-				
-				for (Card possibleCard : possibleCardsToAssasinate) {
-					cardsToExchange = new Card[1];
-					cardsToExchange[0] = possibleCard;
-					list.addAll(super.theorize(this, instigator, otherPlayer, ai, cardsToExchange, game));
-				}
-			}
-		}
-		
+		Assassinate.theorize(this, instigator, victim, ai, cardsToExchange, game, NUM_COINS, list);
 		return list;
 	}
 

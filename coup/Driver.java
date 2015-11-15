@@ -4,9 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
 
 public class Driver {
+	
+	public static TreeMap<String, Integer> effectCounter = new TreeMap<String, Integer>();
 
 	public static void main(String[] args) {
 		
@@ -20,14 +26,16 @@ public class Driver {
 //			System.exit(-2);
 //		}
 //		System.setOut(stream);
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 10000; i++) {
+			Random random = new Random();
+			int numPlayers = random.nextInt(5) + 2; // new random int from 2 to 6
+			Player[] players = new Player[numPlayers];
+			
+			for (int j = 0; j < players.length; j++)
+				players[j] = new Agent(String.format("Agent %d", j + 1));
+			
 			long startTime = System.currentTimeMillis();
-			Game game = new Game(new Agent("Agent 1"), 
-					new Agent("Agent 2"), 
-					new Agent("Agent 3"), 
-					new Agent("Agent 4"), 
-					new Agent("Agent 5"), 
-					new Agent("Agent 6"));
+			Game game = new Game(players);
 			
 			game.dealCards();
 			game.giveCoinsToAllPlayers(2);
@@ -35,25 +43,32 @@ public class Driver {
 			int counter = 1;
 			while (game.winner() == null) {
 				game = nextIteration(game);
-				System.out.printf("Iteration Counter: %d\n", counter);
+				//System.out.printf("Iteration Counter: %d\n", counter);
 				counter++;
 			}
 			
-			System.out.printf("%s won!\n", game.winner().name);
-			System.out.println("----------------------------------------------------------------");
 			long endTime = System.currentTimeMillis();
 			timeDifferences = timeDifferences + (endTime - startTime);
+			System.out.println(i + 1);
+			System.out.printf("%s won!\n", game.winner().name);
+			//System.out.println("----------------------------------------------------------------");
 		}
 		
 		double average = (timeDifferences * 0.001) / 10.0;
 		
 		System.out.printf("Average time elapsed per game (in seconds): %.2f\n", average);
 		
-		//stream.close();
+		Set<String> keySet = effectCounter.keySet();
+		String[] keyArr = keySet.toArray(new String[keySet.size()]);
+		Arrays.sort(keyArr);
+		
+		for (String key : keyArr) {
+			System.out.printf("%50s     %d\n", key, effectCounter.get(key).intValue());
+		}
 	}
 	
 	public static Game nextIteration(Game game) {
-		System.out.printf("It is %s's turn\n", game.players[game.currentPlayer].name);
+		//System.out.printf("It is %s's turn\n", game.players[game.currentPlayer].name);
 		Game action = game.players[game.currentPlayer].nextMove(game);
 		action.restoreStepStack();
 		Step actionStep = Utilities.xthLastItemOfStack(action.stepStack, 1);
@@ -90,12 +105,27 @@ public class Driver {
 			}
 		}	
 		
-		System.out.println(game);
-		System.out.println();
+		//System.out.println(game);
+		//System.out.println();
+		
+		for (Step step : game.stepStack) {
+			Integer counter = effectCounter.get(step.effect.getDescription());
+			counter = (counter == null ? 1 : counter + 1);
+			effectCounter.put(step.effect.getDescription(), counter);
+		}
+		
+		Stack<Step> copyStack = Utilities.copyStack(game.stepStack);
 		
 		while(game.stepStack.size() > 0) {
 			Step step = game.stepStack.pop();
-			step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, game, false);
+			boolean res = step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, game, false);
+			//System.out.println(res);
+			
+			if (res == false) {
+				System.out.println(copyStack.size());
+				System.out.println(copyStack.toString());			
+				System.exit(-1);
+			}
 		}
 		
 		game.incrementPlayer();

@@ -180,6 +180,7 @@ public class Agent extends Player {
 								//game.describeStack();
 								game.backupStack();
 								Step step = game.stepStack.pop();
+								//System.out.println(step.effect.getDescription());
 								c = step.effect.execute(step.instigator, step.victim, this, step.cardsToChallenge, game, true);
 							}
 							if (c) { // if all steps were successfully completed
@@ -323,6 +324,7 @@ public class Agent extends Player {
 		Agent newAgent = new Agent(this.name);
 		newAgent.cards = new ArrayList<Card>(this.cards);
 		newAgent.numCoins = this.numCoins;
+		newAgent.lost = this.lost;
 		return newAgent;
 	}
 }

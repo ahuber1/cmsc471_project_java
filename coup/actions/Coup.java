@@ -30,26 +30,7 @@ public class Coup extends Action {
 	@Override
 	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game) {
 		ArrayList<Game> list = new ArrayList<Game>();
-		
-		if (instigator.numCoins >= NUM_COINS) {
-			Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
-			for (Player otherPlayer : otherPlayers) {
-				Card[] possibleCardsToAssasinate;
-				if (cardsToExchange == null || cardsToExchange.length > 1) {
-					possibleCardsToAssasinate = otherPlayer.getPossibleCardsToAssasinate(game, ai);
-				}
-				else {
-					possibleCardsToAssasinate = cardsToExchange;
-				}
-				
-				for (Card possibleCard : possibleCardsToAssasinate) {
-					cardsToExchange = new Card[1];
-					cardsToExchange[0] = possibleCard;
-					list.addAll(super.theorize(this, instigator, otherPlayer, ai, cardsToExchange, game));
-				}
-			}
-		}
-		
+		Assassinate.theorize(this, instigator, victim, ai, cardsToExchange, game, NUM_COINS, list);
 		return list;
 	}
 	

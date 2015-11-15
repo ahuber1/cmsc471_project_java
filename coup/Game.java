@@ -70,7 +70,7 @@ public class Game {
 		Player winner = null;
 		int counter = 0;
 		for (Player player : players) {
-			if (player.cards.size() > 0) {
+			if (!player.lost()) {
 				winner = player;
 				counter++;
 			}
@@ -250,10 +250,11 @@ public class Game {
 			int cardsLost = origGame.findPlayer(player).cards.size() - player.cards.size();
 			
 			if (player.equals(inquirer)) {
-				x += (players.length * players.length * coinsGained) + cardsLost;
+				//x += (players.length * players.length * coinsGained) + cardsLost;
+				x += cardsLost;
 			}
 			else {
-				x += coinsGained + (players.length * players.length * cardsLost);
+				x += (players.length * players.length * cardsLost);
 			}
 		}
 		

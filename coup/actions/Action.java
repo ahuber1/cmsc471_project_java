@@ -14,10 +14,8 @@ public abstract class Action extends Effect {
 	
 	public abstract Card[] getPossibleBlocks();
 	
-	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai,
-			Card[] cardsToChallenge, Game game) {
-		ArrayList<Game> list = new ArrayList<Game>();
+	public static void theorize(Effect parent, Player instigator, Player victim, Agent ai,
+			Card[] cardsToChallenge, Game game, ArrayList<Game> list) {
 		if (parent instanceof Action) {
 			Action parentAction = (Action) parent;
 			Card[] counteractions = parentAction.getPossibleBlocks();
@@ -38,11 +36,17 @@ public abstract class Action extends Effect {
 				gameCopy.stepStack.add(new Step(parent, instigator, victim, ai, cardsToChallenge));
 				list.add(gameCopy);
 			}
-			
-			return list;
 		}
 		else {
 			throw new IllegalArgumentException("parent must be a parent of Action");
 		}
+	}
+	
+	@Override
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai,
+			Card[] cardsToChallenge, Game game) {
+		ArrayList<Game> list = new ArrayList<Game>();
+		Action.theorize(parent, instigator, victim, ai, cardsToChallenge, game, list);
+		return list;
 	}
 }

@@ -21,7 +21,7 @@ public class Steal extends Action {
 		victim = game.findPlayer(victim);
 		
 		if (victim.numCoins >= NUM_COINS) {
-			victim.numCoins -= NUM_COINS;
+			victim.stealCoins(NUM_COINS);
 			instigator.numCoins += NUM_COINS;
 			return true;
 		}
