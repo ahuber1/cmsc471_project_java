@@ -44,4 +44,9 @@ public abstract class Player {
 	public boolean lost() {
 		return cards.size() == 0;
 	}
+
+	public void stealCoins(int numCoins) {
+		if (this.numCoins > numCoins) // only deduct coins if it will not go to a negative number
+			this.numCoins -= numCoins;
+	}
 }
