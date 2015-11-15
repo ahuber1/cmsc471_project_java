@@ -83,17 +83,26 @@ public class Game {
 		deckOfCards = new ConcurrentLinkedQueue<Card>();
 		
 		Card[] cards = {new Ambassador(), new Assassin(), new Captain(), new Contessa(), new Duke()};
-		int[] counter = new int[cards.length];
-		final int MAX = counter.length * 3;
-		Random rand = new Random();
-		for (int i = 0; i < MAX; ) {
-			int index = rand.nextInt(cards.length);
-			if(counter[index] < 3) {
-				counter[index]++;
-				deckOfCards.add(cards[index]);
-				i++;
+		ArrayList<Card> unshuffledDeck = new ArrayList<Card>();
+		
+		for (Card card : cards) {
+			for (int i = 0; i < 3; i++) {
+				unshuffledDeck.add(card);
 			}
 		}
+		
+		ArrayList<Card> shuffledDeck = null;
+		Random random = new Random();
+		
+		for (int i = 0; i < 10; i++) {
+			shuffledDeck = new ArrayList<Card>();
+			while(!unshuffledDeck.isEmpty()) {
+				shuffledDeck.add(unshuffledDeck.remove(random.nextInt(unshuffledDeck.size())));
+			}
+			unshuffledDeck = shuffledDeck;
+		}
+		
+		deckOfCards.addAll(shuffledDeck);
 	}
 
 	public void incrementPlayer() {
