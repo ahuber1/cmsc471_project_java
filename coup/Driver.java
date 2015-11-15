@@ -1,13 +1,34 @@
 package coup;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Driver {
 
 	public static void main(String[] args) {
-		for (int i = 0; i < 1000; i++) {
-			Game game = new Game(new Agent("Agent 1"), new Agent("Agent 2"));
+		
+		long timeDifferences = 0;
+		File file = new File("output.txt");
+		PrintStream stream = null;
+		try {
+			stream = new PrintStream(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.exit(-2);
+		}
+		System.setOut(stream);
+		for (int i = 0; i < 10; i++) {
+			long startTime = System.currentTimeMillis();
+			Game game = new Game(new Agent("Agent 1"), 
+					new Agent("Agent 2"), 
+					new Agent("Agent 3"), 
+					new Agent("Agent 4"), 
+					new Agent("Agent 5"), 
+					new Agent("Agent 6"));
+			
 			game.dealCards();
 			game.giveCoinsToAllPlayers(2);
 			
@@ -17,7 +38,15 @@ public class Driver {
 			
 			System.out.printf("%s won!\n", game.winner().name);
 			System.out.println("----------------------------------------------------------------");
+			long endTime = System.currentTimeMillis();
+			timeDifferences = timeDifferences + (endTime - startTime);
 		}
+		
+		double average = (timeDifferences * 0.001) / 10.0;
+		
+		System.out.printf("Average time elapsed per game (in seconds): %.2f\n", average);
+		
+		stream.close();
 	}
 	
 	public static Game nextIteration(Game game) {

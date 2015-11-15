@@ -21,7 +21,7 @@ import coup.cards.Duke;
 
 public class Agent extends Player {
 	
-	public static final int MAX_DEPTH = 3;
+	public static final int MAX_QUEUE_SIZE = 2000;
 	public static final Action[] ACTIONS = {new Income(), new ForeignAid(), new Coup()};
 	public static final Card[] CARDS = {new Duke(), new Assassin(), new Ambassador(), new Captain(), new Contessa()};
 	
@@ -62,7 +62,7 @@ public class Agent extends Player {
 				return g;
 			else if (g.winner() != null && !g.winner().equals(this)) // another player won; don't expand
 				continue; // analyze another state
-			else if (d == MAX_DEPTH) {
+			else if (d != depth && q.size() >= MAX_QUEUE_SIZE) {
 				//System.out.printf("%s is calculating finding the best solution with a heuristic\n", this.name);
 				TreeMap<Integer, ArrayList<Game>> games = new TreeMap<Integer, ArrayList<Game>>();
 				int count = 0;

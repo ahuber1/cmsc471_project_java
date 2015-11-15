@@ -39,8 +39,13 @@ public class Assassinate extends Action {
 				return true;
 			}
 			else {
-				victim.cards.remove(0); // remove a card (blindly)
-				return true;
+				if (victim.cards.size() > 0) {
+					victim.cards.remove(0); // remove a card (blindly)
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
 		}
 		else
