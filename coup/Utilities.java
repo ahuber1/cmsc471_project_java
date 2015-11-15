@@ -20,5 +20,14 @@ public class Utilities {
 		
 		return newStack;
 	}
+	
+	public static <T> T xthLastItemOfStack(Stack<T> originalStack, int x) {
+		Stack<T> copyStack = Utilities.copyStack(originalStack);
+		
+		while(copyStack.size() > x)
+			copyStack.pop();
+		
+		return copyStack.pop();
+	}
 
 }

@@ -21,7 +21,6 @@ public class Step {
 	
 	@Override
 	public String toString() {
-		return String.format("[effect = %-30sinstigator = %-30svictim = %-30s cards = %s]", effect.toString(), 
-				instigator.name, victim == null ? "null" : victim.name, Arrays.toString(cardsToChallenge));
+		return effect.getDescription();
 	}
 }

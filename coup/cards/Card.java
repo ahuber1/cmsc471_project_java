@@ -13,4 +13,14 @@ public abstract class Card {
 	public String toString() {
 		return getName();
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Card) {
+			Card otherCard = (Card) obj;
+			return this.getName().equals(otherCard.getName());
+		}
+		else
+			return false;
+	}
 }

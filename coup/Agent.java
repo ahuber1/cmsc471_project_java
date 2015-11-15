@@ -36,19 +36,14 @@ public class Agent extends Player {
 		//System.out.println("----------------------------------------------------------------------");
 		//System.out.printf("%s found a a goal state %d move(s) in advance\n", this.name, g1.depth());
 		
-		for (Step step : g1.backupStepStack)
-			System.out.println(step.effect.getDescription());
-		
-		System.out.println();
-		
-		while(true) {
-			try {
-				Thread.sleep(500);
-				break;
-			} catch (InterruptedException e) {
-				// Keep trying...
-			}
-		}
+//		while(true) {
+//			try {
+//				Thread.sleep(500);
+//				break;
+//			} catch (InterruptedException e) {
+//				// Keep trying...
+//			}
+//		}
 		
 		return g1;
 	}
@@ -203,12 +198,91 @@ public class Agent extends Player {
 		return null;
 	}
 	
-	private void printHandSize(Game game) {
-		for (Player player : game.players) {
-			System.out.println(player.cards.size());
+	@Override
+	public Game requestCounteraction(Step actionStep, Game game, Player instigatorOfCounteraction) {
+		if (actionStep.effect instanceof Action) {
+			Action action = (Action) actionStep.effect;
+			Card[] blocks = action.getPossibleBlocks();
+			ArrayList<Game> list = new ArrayList<Game>();
+			ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
+			
+			for (Card counter : blocks) {
+				Game gameCopy = new Game(game);
+				gameCopy.clearStacks();
+				gameCopy.stepStack.add(actionStep);
+				list.addAll(counter.getCounteraction().theorize(counter.getCounteraction(), instigatorOfCounteraction, actionStep.instigator, 
+						this, actionStep.cardsToChallenge, gameCopy));
+			}
+			Challenge challenge = new Challenge();
+			Game gameCopy = new Game(game);
+			gameCopy.clearStacks();
+			gameCopy.stepStack.add(actionStep);
+			list.addAll(challenge.theorize(null, instigatorOfCounteraction, actionStep.instigator, this, actionStep.cardsToChallenge, gameCopy));
+			
+//			Make all the copy games reference the original game
+//			Make copies of all the games
+//			Increment the player in the copies
+//			Distribute coins in the copies
+//			Add the copies to the queue
+//			RUN!
+			
+			for (Game copy : list) {
+				Game copyOfCopy = new Game(copy);
+				copy.parentGame = game;
+				copyOfCopy.parentGame = copy;
+				copy.backupStack();
+				copyOfCopy.incrementPlayer();
+				copyOfCopy.giveCoinsToAllPlayers(2);
+				copyOfCopy.clearStacks();
+				q.add(copyOfCopy);
+			}
+			
+			Game g1 = nextMove(q, game);
+			
+			return g1.root();
 		}
-		
-		System.out.println();
+		else
+			throw new IllegalStateException("The Effect object in actionStep must be of type Action");
+	}
+	
+	@Override
+	public Game requestChallenge(Step counteractionStep, Game game, Player instigatorOfChallenge) {
+		if (counteractionStep.effect instanceof Block) {
+			Block block = (Block) counteractionStep.effect;
+			Challenge challenge = new Challenge();
+			ArrayList<Game> list = new ArrayList<Game>();
+			ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
+			list.addAll(challenge.theorize(block, instigatorOfChallenge, counteractionStep.instigator, this, 
+				counteractionStep.cardsToChallenge, game));
+			
+//			Make all the copy games reference the original game
+//			Make copies of all the games
+//			Increment the player in the copies
+//			Distribute coins in the copies
+//			Add the copies to the queue
+//			RUN!
+			
+			for (Game copy : list) {
+				Game copyOfCopy = new Game(copy);
+				copy.parentGame = game;
+				copyOfCopy.parentGame = copy;
+				copy.backupStack();
+				copyOfCopy.incrementPlayer();
+				copyOfCopy.giveCoinsToAllPlayers(2);
+				copyOfCopy.clearStacks();
+				q.add(copyOfCopy);
+			}
+			
+			Game g1 = nextMove(q, game);
+			
+			return g1.root();
+		}
+		else if (counteractionStep.effect instanceof Challenge) {
+			return null; // You cannot challenge a challenge
+		}
+		else {
+			throw new IllegalStateException("The Effect object in counteractionStep must be of type Block or Challenge");
+		}
 	}
 
 	@Override

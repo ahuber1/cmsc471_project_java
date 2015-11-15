@@ -41,7 +41,7 @@ public class Challenge extends Effect {
 		ArrayList<Game> list = new ArrayList<Game>();
 		if (game.stepStack.peek().effect.getCard() != null) {
 			if (game.players[game.currentPlayer].equals(ai)) {
-				if (!game.players[game.currentPlayer].cards.contains(game.stepStack.peek().effect.getCard())) { // If the current player contains the card that was previously played
+				if (game.players[game.currentPlayer].cards.contains(game.stepStack.peek().effect.getCard())) { // If the current player contains the card that was previously played
 					Game gameCopy = new Game(game);
 					gameCopy.stepStack.add(new Step(this, instigator, victim, ai, cardsToChallenge));
 					list.add(gameCopy);

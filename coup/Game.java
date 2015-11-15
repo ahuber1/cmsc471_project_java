@@ -119,7 +119,7 @@ public class Game {
 		ArrayList<Player> others = new ArrayList<Player>();
 		
 		for (Player player : players) {
-			if (player != target) {
+			if (!player.equals(target)) {
 				others.add(player);
 			}
 		}
@@ -188,7 +188,7 @@ public class Game {
 		for (Step step : stepStack) {
 			builder.append(String.format("\tInstigator: %s\n", step.instigator));
 			builder.append(String.format("\tVictim: %s\n", step.victim));
-			builder.append(String.format("\tAI: %d\n", step.ai.name));
+			builder.append(String.format("\tAI: %s\n", step.ai.name));
 			builder.append(String.format("\tEffect: %s\n", step.effect.getDescription()));
 			builder.append("\tCards to Exchange:\n");
 			
@@ -251,5 +251,10 @@ public class Game {
 			}
 			return game;
 		}
+	}
+
+	public void clearStacks() {
+		backupStepStack.clear();
+		stepStack.clear();
 	}
 }
