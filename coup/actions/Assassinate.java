@@ -48,6 +48,7 @@ public class Assassinate extends Action {
 		ai = temp == null ? null : (Agent) temp;
 		
 		if (instigator.numCoins >= numCoins) {
+			instigator.numCoins -= numCoins;
 			boolean isVictimAgent = victim.equals(ai);
 			
 			if (isVictimAgent && !(theorizing)) {
