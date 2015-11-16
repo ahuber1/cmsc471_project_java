@@ -21,7 +21,8 @@ import coup.cards.Duke;
 
 public class Agent extends Player {
 	
-	public static final int MAX_QUEUE_SIZE = 2000;
+	public static final int MAX_QUEUE_FACTOR = 1000;
+	
 	public static final Action[] ACTIONS = {new Income(), new ForeignAid(), new Coup()};
 	public static final Card[] CARDS = {new Duke(), new Assassin(), new Ambassador(), new Captain(), new Contessa()};
 	
@@ -54,84 +55,22 @@ public class Agent extends Player {
 	private Game nextMove(ConcurrentLinkedQueue<Game> q, Game origGame) {
 		
 		while (!q.isEmpty()) {
-			Game g = q.poll();
-			
+			Game g = q.poll();			
 			int d = g.depth();
+			int maxQueueSize = MAX_QUEUE_FACTOR * (g.getOtherPlayersExcept(g.players[g.currentPlayer]).length + 1);
 			
-			if (g.winner() != null && g.winner().equals(this))
-				return g;
+			if (g.winner() != null && g.winner().equals(this)) {
+				Game copy = new Game(g);
+				copy.parentGame = g.parentGame;
+				if (testMove(copy))
+					return g;
+				else
+					continue; // skip this game; it is invalid
+			}
 			else if (g.winner() != null && !g.winner().equals(this)) // another player won; don't expand
 				continue; // analyze another state
-			else if (d != depth && q.size() >= MAX_QUEUE_SIZE) {
-				//System.out.printf("%s is calculating finding the best solution with a heuristic\n", this.name);
-				TreeMap<Integer, ArrayList<Game>> games = new TreeMap<Integer, ArrayList<Game>>();
-				int count = 0;
-				
-				while(!q.isEmpty()) {
-					count++;
-					
-					//System.out.print(count);
-					//System.out.print("\r");
-					
-					int heuristicValue = g.calculateHeuristic(this, origGame);
-					ArrayList<Game> list = games.get(heuristicValue);
-					
-					if (list == null)
-						list = new ArrayList<Game>();
-					
-					list.add(g);
-					games.put(heuristicValue, list);
-					g = q.poll();
-				}
-				
-				Set<Integer> keySet = games.keySet();
-				Integer[] keyArr = keySet.toArray(new Integer[keySet.size()]);
-				Arrays.sort(keyArr);
-				int maxNumIndicies = 5;
-				Game[] bestGames = new Game[maxNumIndicies];
-				int k = 0;
-				
-				for (int i = keyArr.length - 1; i >= 0; i--) {
-					int key = keyArr[i];
-					ArrayList<Game> list = games.get(key);
-					for (int j = 0; j < list.size() && k < bestGames.length; j++) {
-						Game game = list.get(j);
-						if (k == 0) {
-							bestGames[k] = game;
-							k++;
-						}
-						else {
-							Game root1 = bestGames[k - 1].root();
-							Game root2 = game.root();
-							Stack<Step> stack1 = Utilities.copyStack(root1.backupStepStack);
-							Stack<Step> stack2 = Utilities.copyStack(root2.backupStepStack);
-							Step step1 = null;
-							Step step2 = null;
-							
-							while(!stack1.isEmpty())
-								step1 = stack1.pop();
-							
-							while(!stack2.isEmpty())
-								step2 = stack2.pop();
-							
-							if(!step1.effect.equals(step2.effect)) {
-								bestGames[k] = game;
-								k++;
-							}
-							
-						}
-					}
-				}
-				
-				Random rand = new Random();
-				Game bestMove = null;
-				
-				while (bestMove == null)
-					bestMove = bestGames[rand.nextInt(bestGames.length)];
-				
-				//System.out.printf("\n%s found the best move\n", this.name);
-				
-				return bestMove;
+			else if (d != depth && q.size() >= maxQueueSize) {
+				return nextMoveWithHeuristic(q, g, origGame);
 			}
 			else {	
 				
@@ -199,6 +138,100 @@ public class Agent extends Player {
 		return null;
 	}
 	
+	private Game nextMoveWithHeuristic(ConcurrentLinkedQueue<Game> q, Game g, Game origGame) {
+		//System.out.printf("%s is calculating finding the best solution with a heuristic\n", this.name);
+		TreeMap<Integer, ArrayList<Game>> games = new TreeMap<Integer, ArrayList<Game>>();
+		int count = 0;
+		
+		while(!q.isEmpty()) {
+			count++;
+			
+			//System.out.print(count);
+			//System.out.print("\r");
+			
+			int heuristicValue = g.calculateHeuristic(this, origGame);
+			ArrayList<Game> list = games.get(heuristicValue);
+			
+			if (list == null)
+				list = new ArrayList<Game>();
+			
+			list.add(g);
+			games.put(heuristicValue, list);
+			g = q.poll();
+		}
+		
+		Set<Integer> keySet = games.keySet();
+		Integer[] keyArr = keySet.toArray(new Integer[keySet.size()]);
+		Arrays.sort(keyArr);
+		int maxNumIndicies = 5;
+		Game[] bestGames = new Game[maxNumIndicies];
+		int k = 0;
+		
+		for (int i = keyArr.length - 1; i >= 0; i--) {
+			int key = keyArr[i];
+			ArrayList<Game> list = games.get(key);
+			for (int j = 0; j < list.size() && k < bestGames.length; j++) {
+				Game game = list.get(j);
+				if (k == 0) {
+					bestGames[k] = game;
+					k++;
+				}
+				else {
+					Game root1 = bestGames[k - 1].root();
+					Game root2 = game.root();
+					Stack<Step> stack1 = Utilities.copyStack(root1.backupStepStack);
+					Stack<Step> stack2 = Utilities.copyStack(root2.backupStepStack);
+					Step step1 = null;
+					Step step2 = null;
+					
+					while(!stack1.isEmpty())
+						step1 = stack1.pop();
+					
+					while(!stack2.isEmpty())
+						step2 = stack2.pop();
+					
+					if(!step1.effect.equals(step2.effect)) {
+						bestGames[k] = game;
+						k++;
+					}
+					
+				}
+			}
+		}
+		
+		Random rand = new Random();
+		Game bestMove = null;
+		boolean validMove = false;
+		
+		while (validMove == false) {
+			int index = rand.nextInt(bestGames.length);
+			bestMove = bestGames[index];
+			
+			if (bestMove != null)
+				validMove = testMove(bestMove);
+			if (validMove == false) 
+				bestGames[index] = null;
+		}
+		
+		//System.out.printf("\n%s found the best move\n", this.name);
+		
+		return bestMove;
+	}
+	
+	private boolean testMove(Game move) {
+		Game copy = new Game(move);
+		copy.parentGame = move.parentGame;
+		
+		try {
+			Driver.nextIteration(copy);
+			return true;
+		}
+		catch (Exception e) {
+			System.out.println(e.toString());
+			return false;
+		}
+	}
+
 	@Override
 	public Game requestCounteraction(Step actionStep, Game game, Player instigatorOfCounteraction) {
 		if (actionStep.effect instanceof Action) {

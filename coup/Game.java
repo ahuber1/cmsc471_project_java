@@ -37,7 +37,6 @@ public class Game {
 		this.currentPlayer = game.currentPlayer;
 		this.deckOfCards = new ConcurrentLinkedQueue<Card>(game.deckOfCards);
 		this.stepStack = Utilities.copyStack(game.stepStack); 
-		this.backupStepStack = new Stack<Step>();
 		this.backupStepStack = Utilities.copyStack(game.backupStepStack);
 	}
 	
