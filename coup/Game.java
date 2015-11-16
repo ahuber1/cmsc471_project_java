@@ -279,9 +279,12 @@ public class Game {
 
 	public boolean executeSteps() {		
 		while(stepStack.size() > 0) {
-			Step step = stepStack.pop();
+			Step step = stepStack.peek();
+			System.out.println(step.effect.getDescription());
 			boolean res = step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, this, false);
-			//System.out.println(res);
+			
+			if (!stepStack.isEmpty() && stepStack.peek() == step) // If the stack did not change
+				stepStack.pop();
 			
 			if (res == false) {			
 				return false;

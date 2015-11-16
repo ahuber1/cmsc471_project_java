@@ -213,4 +213,40 @@ public class Utilities {
 		copy.restoreStepStack();
 		return copy.executeSteps();
 	}
+	
+	public static Card revealCard(Player player, Game game) {
+		ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
+		Card[] possibleCardsToAssasinate = getPossibleCardsToAssasinate(game, player);
+		
+		for (Card possibleCard : possibleCardsToAssasinate) {
+			Card[] cardsToExchange = new Card[1];
+			cardsToExchange[0] = possibleCard;
+			q.addAll(game.stepStack.peek().effect.theorize(null, game.players[game.currentPlayer], player, player, cardsToExchange, game));
+		}
+		
+		Game g1 = Utilities.performMove(q, game, player);
+		
+		if (g1 != null) {
+			while (g1 != null && g1.parentGame != game)
+				g1 = g1.parentGame;
+			
+			if (g1 != null) {
+				for (Step step : g1.stepStack) {
+					if (step.effect instanceof Action) {
+						return step.cardsToChallenge[0];
+					}
+				}
+			}
+		}
+		
+		Random random = new Random();
+		return player.cards.get(random.nextInt(player.cards.size())); // return random card from hand; we're going to lose anyway
+	}
+	
+	public static Card[] getPossibleCardsToAssasinate(Game game, Player player) {
+		if (game.players[game.currentPlayer].equals(player))
+			return player.cards.toArray(new Card[player.cards.size()]);
+		else
+			return Utilities.CARDS;
+	}
 }

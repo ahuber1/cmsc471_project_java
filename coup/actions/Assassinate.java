@@ -3,6 +3,7 @@ package coup.actions;
 import java.util.ArrayList;
 
 import coup.Player;
+import coup.Utilities;
 import coup.Effect;
 import coup.Game;
 import coup.Player;
@@ -21,7 +22,7 @@ public class Assassinate extends Action {
 			for (Player otherPlayer : otherPlayers) {
 				Card[] possibleCardsToAssasinate;
 				if (cardsToExchange == null || cardsToExchange.length > 1) {
-					possibleCardsToAssasinate = otherPlayer.getPossibleCardsToAssasinate(game, ai);
+					possibleCardsToAssasinate = Utilities.getPossibleCardsToAssasinate(game, ai);
 				}
 				else {
 					possibleCardsToAssasinate = cardsToExchange;
@@ -53,15 +54,7 @@ public class Assassinate extends Action {
 			
 			if (isVictimAgent && !(theorizing)) {
 				
-				Card cardToReveal = victim.revealCard(game, ai, effect);
-				
-//				if (cardsToExchange != null && cardsToExchange.length == 1) { // if we are contemplating the possibility of removing a card
-//					cardToReveal = cardsToExchange[0];
-//				}
-//				else {
-//					
-//				}
-				
+				Card cardToReveal = Utilities.revealCard(victim, game);				
 				return victim.cards.remove(cardToReveal);
 			}
 			else if (isVictimAgent) {

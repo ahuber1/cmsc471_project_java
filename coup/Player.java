@@ -105,42 +105,6 @@ public class Player {
 			throw new IllegalStateException("The Effect object in counteractionStep must be of type Block or Challenge");
 		}
 	}
-
-	public Card revealCard(Game game, Player ai, Effect effect) {
-		ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
-		Card[] possibleCardsToAssasinate = getPossibleCardsToAssasinate(game, ai);
-		
-		for (Card possibleCard : possibleCardsToAssasinate) {
-			Card[] cardsToExchange = new Card[1];
-			cardsToExchange[0] = possibleCard;
-			q.addAll(effect.theorize(null, game.players[game.currentPlayer], this, ai, cardsToExchange, game));
-		}
-		
-		Game g1 = Utilities.performMove(q, game, this);
-		
-		if (g1 != null) {
-			while (g1 != null && g1.parentGame != game)
-				g1 = g1.parentGame;
-			
-			if (g1 != null) {
-				for (Step step : g1.stepStack) {
-					if (step.effect instanceof Action) {
-						return step.cardsToChallenge[0];
-					}
-				}
-			}
-		}
-		
-		Random random = new Random();
-		return cards.get(random.nextInt(cards.size())); // return random card from hand; we're going to lose anyway
-	}
-	
-	public Card[] getPossibleCardsToAssasinate(Game game, Player ai) {
-		if (this.equals(ai))
-			return this.cards.toArray(new Card[this.cards.size()]);
-		else
-			return Utilities.CARDS;
-	}
 	
 	public Player copy() {
 		Player newAgent = new Player(this.name);
