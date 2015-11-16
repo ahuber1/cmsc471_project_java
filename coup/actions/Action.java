@@ -14,8 +14,7 @@ public abstract class Action extends Effect {
 	
 	public abstract Card[] getPossibleBlocks();
 	
-	public static void theorize(Effect parent, Player instigator, Player victim, Agent ai,
-			Card[] cardsToChallenge, Game game, ArrayList<Game> list) {
+	public static void theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToChallenge, Game game, ArrayList<Game> list) {
 		if (parent instanceof Action) {
 			Action parentAction = (Action) parent;
 			Card[] counteractions = parentAction.getPossibleBlocks();

@@ -16,12 +16,18 @@ public class Exchange extends Action {
 		instigator = game.findPlayer(instigator);
 		
 		if (game.deckOfCards.size() >= 2) {
-			game.deckOfCards.add(cardsToExchange[0]);
-			game.deckOfCards.add(cardsToExchange[1]);
-			instigator.cards.remove(cardsToExchange[0]);
-			instigator.cards.remove(cardsToExchange[1]);
-			instigator.cards.add(game.deckOfCards.poll());
-			instigator.cards.add(game.deckOfCards.poll());
+			game.deckOfCards.add(instigator.cards.remove(0));
+			game.deckOfCards.add(instigator.cards.remove(0));
+			
+			if (theorizing) {
+				instigator.cards.add(cardsToExchange[0]);
+				instigator.cards.add(cardsToExchange[1]);
+			}
+			else {
+				instigator.cards.add(game.deckOfCards.poll());
+				instigator.cards.add(game.deckOfCards.poll());
+			}
+			
 			return true;
 		}
 		else
@@ -48,13 +54,13 @@ public class Exchange extends Action {
 			Game game) {
 		ArrayList<Game> list = new ArrayList<Game>();
 		Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
-		if (game.deckOfCards.size() >= 2) {
+		if (game.deckOfCards.size() >= 2 && instigator.cards.size() == 2) {
 			for (Player otherPlayer : otherPlayers) {
-				for (int i = 0; i < instigator.cards.size(); i++) {
-					for (int j = i + 1; j < instigator.cards.size(); j++) {
+				for (int i = 0; i < Agent.CARDS.length; i++) {
+					for (int j = 0; j < Agent.CARDS.length; j++) {
 						cardsToExchange = new Card[2];
-						cardsToExchange[0] = instigator.cards.get(i);
-						cardsToExchange[1] = instigator.cards.get(j);
+						cardsToExchange[0] = Agent.CARDS[i];
+						cardsToExchange[1] = Agent.CARDS[j];
 						list.addAll(super.theorize(this, instigator, otherPlayer, ai, cardsToExchange, game));
 					}
 				}

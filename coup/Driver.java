@@ -26,7 +26,7 @@ public class Driver {
 //			System.exit(-2);
 //		}
 //		System.setOut(stream);
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 30; i++) {
 			System.out.println(i + 1);
 			Random random = new Random();
 			int numPlayers =  6; //random.nextInt(5) + 2; // new random int from 2 to 6
