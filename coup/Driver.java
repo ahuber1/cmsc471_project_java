@@ -27,6 +27,7 @@ public class Driver {
 //		}
 //		System.setOut(stream);
 		for (int i = 0; i < 10000; i++) {
+			System.out.println(i + 1);
 			Random random = new Random();
 			int numPlayers = random.nextInt(5) + 2; // new random int from 2 to 6
 			Player[] players = new Player[numPlayers];
@@ -49,7 +50,6 @@ public class Driver {
 			
 			long endTime = System.currentTimeMillis();
 			timeDifferences = timeDifferences + (endTime - startTime);
-			System.out.println(i + 1);
 			System.out.printf("%s won!\n", game.winner().name);
 			//System.out.println("----------------------------------------------------------------");
 		}
@@ -114,20 +114,7 @@ public class Driver {
 			effectCounter.put(step.effect.getDescription(), counter);
 		}
 		
-		Stack<Step> copyStack = Utilities.copyStack(game.stepStack);
-		
-		while(game.stepStack.size() > 0) {
-			Step step = game.stepStack.pop();
-			boolean res = step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, game, false);
-			//System.out.println(res);
-			
-			if (res == false) {
-				System.out.println(copyStack.size());
-				System.out.println(copyStack.toString());			
-				System.exit(-1);
-			}
-		}
-		
+		game.executeSteps();		
 		game.incrementPlayer();
 		game.giveCoinsToAllPlayers(2);
 		return game;

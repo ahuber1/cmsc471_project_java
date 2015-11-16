@@ -276,4 +276,18 @@ public class Game {
 		backupStepStack.clear();
 		stepStack.clear();
 	}
+
+	public boolean executeSteps() {		
+		while(stepStack.size() > 0) {
+			Step step = stepStack.pop();
+			boolean res = step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, this, false);
+			//System.out.println(res);
+			
+			if (res == false) {			
+				return false;
+			}
+		}
+		
+		return true;
+	}
 }

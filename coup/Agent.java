@@ -21,7 +21,7 @@ import coup.cards.Duke;
 
 public class Agent extends Player {
 	
-	public static final int MAX_QUEUE_FACTOR = 1000;
+	public static final int MAX_QUEUE_SIZE = 2000;
 	
 	public static final Action[] ACTIONS = {new Income(), new ForeignAid(), new Coup()};
 	public static final Card[] CARDS = {new Duke(), new Assassin(), new Ambassador(), new Captain(), new Contessa()};
@@ -57,11 +57,12 @@ public class Agent extends Player {
 		while (!q.isEmpty()) {
 			Game g = q.poll();			
 			int d = g.depth();
-			int maxQueueSize = MAX_QUEUE_FACTOR * (g.getOtherPlayersExcept(g.players[g.currentPlayer]).length + 1);
 			
 			if (g.winner() != null && g.winner().equals(this)) {
+				System.out.println("Found goal state");
 				Game copy = new Game(g);
 				copy.parentGame = g.parentGame;
+				copy.restoreStepStack();
 				if (testMove(copy))
 					return g;
 				else
@@ -69,7 +70,7 @@ public class Agent extends Player {
 			}
 			else if (g.winner() != null && !g.winner().equals(this)) // another player won; don't expand
 				continue; // analyze another state
-			else if (d != depth && q.size() >= maxQueueSize) {
+			else if (d != depth && q.size() >= MAX_QUEUE_SIZE) {
 				return nextMoveWithHeuristic(q, g, origGame);
 			}
 			else {	
@@ -163,73 +164,45 @@ public class Agent extends Player {
 		Set<Integer> keySet = games.keySet();
 		Integer[] keyArr = keySet.toArray(new Integer[keySet.size()]);
 		Arrays.sort(keyArr);
-		int maxNumIndicies = 5;
-		Game[] bestGames = new Game[maxNumIndicies];
-		int k = 0;
+		//int maxNumIndicies = 5;
+		//Game[] bestGames = new Game[maxNumIndicies];
+		//int k = 0;
+		
+		Random rand = new Random();
 		
 		for (int i = keyArr.length - 1; i >= 0; i--) {
 			int key = keyArr[i];
 			ArrayList<Game> list = games.get(key);
-			for (int j = 0; j < list.size() && k < bestGames.length; j++) {
-				Game game = list.get(j);
-				if (k == 0) {
-					bestGames[k] = game;
-					k++;
+			boolean validMove = false;
+			
+			while (validMove == false && list.size() > 0) {
+				int index = rand.nextInt(list.size());
+				Game bestMove = list.get(index);
+				validMove = testMove(bestMove);
+				
+				if (validMove == false) {
+					list.remove(index);
+					//System.out.println("Trying another game...");
 				}
 				else {
-					Game root1 = bestGames[k - 1].root();
-					Game root2 = game.root();
-					Stack<Step> stack1 = Utilities.copyStack(root1.backupStepStack);
-					Stack<Step> stack2 = Utilities.copyStack(root2.backupStepStack);
-					Step step1 = null;
-					Step step2 = null;
+					//System.out.printf("\n%s found the best move\n", this.name);
 					
-					while(!stack1.isEmpty())
-						step1 = stack1.pop();
+					if (bestMove == null)
+						throw new IllegalStateException();
 					
-					while(!stack2.isEmpty())
-						step2 = stack2.pop();
-					
-					if(!step1.effect.equals(step2.effect)) {
-						bestGames[k] = game;
-						k++;
-					}
-					
+					return bestMove;
 				}
 			}
 		}
 		
-		Random rand = new Random();
-		Game bestMove = null;
-		boolean validMove = false;
-		
-		while (validMove == false) {
-			int index = rand.nextInt(bestGames.length);
-			bestMove = bestGames[index];
-			
-			if (bestMove != null)
-				validMove = testMove(bestMove);
-			if (validMove == false) 
-				bestGames[index] = null;
-		}
-		
-		//System.out.printf("\n%s found the best move\n", this.name);
-		
-		return bestMove;
+		throw new IllegalStateException();
 	}
 	
 	private boolean testMove(Game move) {
 		Game copy = new Game(move);
-		copy.parentGame = move.parentGame;
-		
-		try {
-			Driver.nextIteration(copy);
-			return true;
-		}
-		catch (Exception e) {
-			System.out.println(e.toString());
-			return false;
-		}
+		//copy.parentGame = move.parentGame;
+		copy.restoreStepStack();
+		return copy.executeSteps();
 	}
 
 	@Override
@@ -332,16 +305,21 @@ public class Agent extends Player {
 		
 		Game g1 = nextMove(q, game);
 		
-		while (g1.parentGame != game)
-			g1 = g1.parentGame;
-		
-		for (Step step : g1.stepStack) {
-			if (step.effect instanceof Action) {
-				return step.cardsToChallenge[0];
+		if (g1 != null) {
+			while (g1 != null && g1.parentGame != game)
+				g1 = g1.parentGame;
+			
+			if (g1 != null) {
+				for (Step step : g1.stepStack) {
+					if (step.effect instanceof Action) {
+						return step.cardsToChallenge[0];
+					}
+				}
 			}
 		}
 		
-		return null;
+		Random random = new Random();
+		return cards.get(random.nextInt(cards.size())); // return random card from hand; we're going to lose anyway
 	}
 	
 	@Override

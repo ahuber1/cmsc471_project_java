@@ -41,9 +41,15 @@ public class Income extends Action {
 	@Override
 	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToChallenge,
 			Game game) {
-		//Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
+		Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
 		ArrayList<Game> list = new ArrayList<Game>();
-		list.addAll(super.theorize(this, instigator, null, ai, null, game));
+		
+		for (Player player : otherPlayers) {
+			if (!player.lost()) {
+				list.addAll(super.theorize(this, instigator, player, ai, cardsToChallenge, game));
+			}
+		}
+		
 		return list;
 	}
 }
