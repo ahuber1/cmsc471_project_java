@@ -7,12 +7,12 @@ import coup.cards.Card;
 public class Challenge extends Effect {
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
 		instigator = game.findPlayer(instigator);
 		victim = game.findPlayer(victim);
 		
 		Player temp = game.findPlayer(ai);
-		ai = temp == null ? null : (Agent) temp;
+		ai = temp == null ? null : (Player) temp;
 		
 		if (theorizing) { // if we are theorizing, assume the worst-case scenario
 			ai.looses(); // assume worst-case scenario happens and the agent looses the game
@@ -40,7 +40,7 @@ public class Challenge extends Effect {
 	
 	// Work in progress
 	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToChallenge, Game game) {
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToChallenge, Game game) {
 		ArrayList<Game> list = new ArrayList<Game>();
 		if (game.stepStack.peek().effect.getCard() != null) {
 			if (game.players[game.currentPlayer].equals(ai)) {

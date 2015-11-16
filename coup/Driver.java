@@ -33,7 +33,7 @@ public class Driver {
 			Player[] players = new Player[numPlayers];
 			
 			for (int j = 0; j < players.length; j++)
-				players[j] = new Agent(String.format("Agent %d", j + 1));
+				players[j] = new Player(String.format("Agent %d", j + 1));
 			
 			long startTime = System.currentTimeMillis();
 			Game game = new Game(players);
@@ -70,7 +70,7 @@ public class Driver {
 	
 	public static Game nextIteration(Game game) {
 		//System.out.printf("It is %s's turn\n", game.players[game.currentPlayer].name);
-		Game action = Utilities.performMove(game, (Agent) game.players[game.currentPlayer]);
+		Game action = Utilities.performMove(game.players[game.currentPlayer], game);
 		action.restoreStepStack();
 		Step actionStep = Utilities.xthLastItemOfStack(action.stepStack, 1);
 		game.stepStack.push(actionStep);

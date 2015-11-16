@@ -2,7 +2,7 @@ package coup.actions;
 
 import java.util.ArrayList;
 
-import coup.Agent;
+import coup.Player;
 import coup.Effect;
 import coup.Game;
 import coup.Player;
@@ -15,7 +15,7 @@ public class Steal extends Action {
 	private static final int NUM_COINS = 2;
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
 		
 		instigator = game.findPlayer(instigator);
 		victim = game.findPlayer(victim);
@@ -46,7 +46,7 @@ public class Steal extends Action {
 	}
 	
 	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToChallenge,
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToChallenge,
 			Game game) {
 		Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
 		ArrayList<Game> list = new ArrayList<Game>();

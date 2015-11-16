@@ -8,10 +8,10 @@ public class Step {
 	public Effect effect;
 	public Player instigator; 
 	public Player victim;
-	public Agent ai;
+	public Player ai;
 	public Card[] cardsToChallenge; 
 	
-	public Step(Effect effect, Player instigator, Player victim, Agent ai, Card[] cardsToChallenge) {
+	public Step(Effect effect, Player instigator, Player victim, Player ai, Card[] cardsToChallenge) {
 		this.effect = effect;
 		this.instigator = instigator;
 		this.victim = victim;

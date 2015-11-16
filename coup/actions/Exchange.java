@@ -2,7 +2,7 @@ package coup.actions;
 
 import java.util.ArrayList;
 
-import coup.Agent;
+import coup.Player;
 import coup.Effect;
 import coup.Game;
 import coup.Player;
@@ -13,7 +13,7 @@ import coup.cards.Card;
 public class Exchange extends Action {
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
 		instigator = game.findPlayer(instigator);
 		
 		if (game.deckOfCards.size() >= 2) {
@@ -51,7 +51,7 @@ public class Exchange extends Action {
 	}
 	
 	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToExchange,
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToExchange,
 			Game game) {
 		ArrayList<Game> list = new ArrayList<Game>();
 		Player[] otherPlayers = game.getOtherPlayersExcept(instigator);

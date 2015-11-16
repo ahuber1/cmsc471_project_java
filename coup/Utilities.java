@@ -51,7 +51,7 @@ public class Utilities {
 		return copyStack.pop();
 	}
 	
-	public static Game performMove(Agent agent, Game game) {
+	public static Game performMove(Player agent, Game game) {
 		ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
 		q.add(game);
 		Game g1 = performMove(q, game, agent).root();		
@@ -61,7 +61,7 @@ public class Utilities {
 	public static int depth = 0;
 	public static int counter = 0;
 	
-	public static Game performMove(ConcurrentLinkedQueue<Game> q, Game origGame, Agent agent) {
+	public static Game performMove(ConcurrentLinkedQueue<Game> q, Game origGame, Player agent) {
 		
 		while (!q.isEmpty()) {
 			Game g = q.poll();			
@@ -148,7 +148,7 @@ public class Utilities {
 		return null;
 	}
 	
-	public static Game performMoveWithHeuristic(ConcurrentLinkedQueue<Game> q, Game g, Game origGame, Agent agent) {
+	public static Game performMoveWithHeuristic(ConcurrentLinkedQueue<Game> q, Game g, Game origGame, Player agent) {
 		//System.out.printf("%s is calculating finding the best solution with a heuristic\n", this.name);
 		TreeMap<Integer, ArrayList<Game>> games = new TreeMap<Integer, ArrayList<Game>>();
 		int count = 0;

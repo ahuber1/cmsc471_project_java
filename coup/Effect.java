@@ -6,9 +6,9 @@ import coup.cards.Card;
 
 public abstract class Effect{
 
-	public abstract boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing);
+	public abstract boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing);
 	public abstract String getDescription();
-	public abstract ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game);
+	public abstract ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game);
 	public abstract Card getCard();
 	
 	@Override

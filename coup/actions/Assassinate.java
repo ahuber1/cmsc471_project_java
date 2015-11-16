@@ -2,7 +2,7 @@ package coup.actions;
 
 import java.util.ArrayList;
 
-import coup.Agent;
+import coup.Player;
 import coup.Effect;
 import coup.Game;
 import coup.Player;
@@ -14,7 +14,7 @@ public class Assassinate extends Action {
 
 	private static final int NUM_COINS = 3;
 	
-	public static void theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToExchange,
+	public static void theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToExchange,
 			Game game, int numCoins, ArrayList<Game> list) {		
 		if (instigator.numCoins >= numCoins) {
 			Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
@@ -36,7 +36,7 @@ public class Assassinate extends Action {
 		}
 	}
 	
-	public static boolean execute(Effect effect, int numCoins, Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public static boolean execute(Effect effect, int numCoins, Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
 		
 		if(theorizing == false)
 			System.out.printf("");
@@ -45,7 +45,7 @@ public class Assassinate extends Action {
 		victim = game.findPlayer(victim);
 		
 		Player temp = game.findPlayer(ai);
-		ai = temp == null ? null : (Agent) temp;
+		ai = temp == null ? null : (Player) temp;
 		
 		if (instigator.numCoins >= numCoins) {
 			instigator.numCoins -= numCoins;
@@ -82,7 +82,7 @@ public class Assassinate extends Action {
 	}
 	
 	@Override
-	public boolean execute(Player instigator, Player victim, Agent ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
 		return Assassinate.execute(this, NUM_COINS, instigator, victim, ai, cardsToExchange, game, theorizing);
 	}
 
@@ -98,7 +98,7 @@ public class Assassinate extends Action {
 	}
 	
 	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Agent ai, Card[] cardsToExchange,
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToExchange,
 			Game game) {
 		ArrayList<Game> list = new ArrayList<Game>();
 		Assassinate.theorize(this, instigator, victim, ai, cardsToExchange, game, NUM_COINS, list);
