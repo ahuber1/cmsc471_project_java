@@ -26,7 +26,7 @@ public class Driver {
 //			System.exit(-2);
 //		}
 //		System.setOut(stream);
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 3; i++) {
 			System.out.println(i + 1);
 			Random random = new Random();
 			int numPlayers =  6; //random.nextInt(5) + 2; // new random int from 2 to 6
@@ -44,14 +44,15 @@ public class Driver {
 			int counter = 1;
 			while (game.winner() == null) {
 				game = nextIteration(game);
-				System.out.printf("Iteration Counter: %d\n", counter);
+				//System.out.printf("Iteration Counter: %d\n", counter);
 				counter++;
 			}
 			
 			long endTime = System.currentTimeMillis();
 			timeDifferences = timeDifferences + (endTime - startTime);
 			System.out.printf("%s won!\n", game.winner().name);
-			System.out.println("----------------------------------------------------------------");
+			System.out.println(((endTime - startTime) * 0.001) / 60.0);
+			//System.out.println("----------------------------------------------------------------");
 		}
 		
 		double average = (timeDifferences * 0.001) / 10.0;
@@ -68,8 +69,8 @@ public class Driver {
 	}
 	
 	public static Game nextIteration(Game game) {
-		System.out.printf("It is %s's turn\n", game.players[game.currentPlayer].name);
-		Game action = game.players[game.currentPlayer].nextMove(game);
+		//System.out.printf("It is %s's turn\n", game.players[game.currentPlayer].name);
+		Game action = Utilities.performMove(game, (Agent) game.players[game.currentPlayer]);
 		action.restoreStepStack();
 		Step actionStep = Utilities.xthLastItemOfStack(action.stepStack, 1);
 		game.stepStack.push(actionStep);
@@ -105,8 +106,8 @@ public class Driver {
 			}
 		}	
 		
-		System.out.println(game);
-		System.out.println();
+		//System.out.println(game);
+		//System.out.println();
 		
 		for (Step step : game.stepStack) {
 			Integer counter = effectCounter.get(step.effect.getDescription());

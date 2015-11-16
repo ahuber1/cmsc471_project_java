@@ -34,7 +34,6 @@ public abstract class Player {
 	public abstract Card revealCard(Game game, Agent ai, Effect effect);
 	public abstract Player copy();
 	public abstract Card[] getPossibleCardsToAssasinate(Game game, Agent ai);
-	public abstract Game nextMove(Game game);
 	public abstract Game requestCounteraction(Step actionStep, Game game, Player instigatorOfCounteraction);
 	public abstract Game requestChallenge(Step counteractionStep, Game game, Player instigatorOfChallenge);
 

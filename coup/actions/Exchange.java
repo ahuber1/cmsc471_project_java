@@ -6,6 +6,7 @@ import coup.Agent;
 import coup.Effect;
 import coup.Game;
 import coup.Player;
+import coup.Utilities;
 import coup.cards.Ambassador;
 import coup.cards.Card;
 
@@ -56,11 +57,11 @@ public class Exchange extends Action {
 		Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
 		if (game.deckOfCards.size() >= 2 && instigator.cards.size() == 2) {
 			for (Player otherPlayer : otherPlayers) {
-				for (int i = 0; i < Agent.CARDS.length; i++) {
-					for (int j = 0; j < Agent.CARDS.length; j++) {
+				for (int i = 0; i < Utilities.CARDS.length; i++) {
+					for (int j = 0; j < Utilities.CARDS.length; j++) {
 						cardsToExchange = new Card[2];
-						cardsToExchange[0] = Agent.CARDS[i];
-						cardsToExchange[1] = Agent.CARDS[j];
+						cardsToExchange[0] = Utilities.CARDS[i];
+						cardsToExchange[1] = Utilities.CARDS[j];
 						list.addAll(super.theorize(this, instigator, otherPlayer, ai, cardsToExchange, game));
 					}
 				}
