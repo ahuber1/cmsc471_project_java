@@ -1,19 +1,19 @@
-package coup.cards;
+package coup.characters;
 
 import coup.Block;
 import coup.actions.Action;
-import coup.actions.Steal;
+import coup.actions.Exchange;
 
-public class Captain extends Card {
+public class Ambassador extends Character {
 
 	@Override
 	public String getName() {
-		return "Captain";
+		return "Ambassador";
 	}
 
 	@Override
 	public Action getAction() {
-		return new Steal();
+		return new Exchange();
 	}
 
 	@Override
@@ -22,12 +22,12 @@ public class Captain extends Card {
 			
 			@Override
 			public String getDescription() {
-				return "Blocks Stealing (Captain)";
+				return "Blocks Stealing (Ambassador)";
 			}
 			
 			@Override
-			public Card getCard() {
-				return Captain.this;
+			public Character getCard() {
+				return Ambassador.this;
 			}
 		};
 	}

@@ -3,17 +3,17 @@ package coup.actions;
 import java.util.ArrayList;
 
 import coup.Player;
+import coup.characters.Character;
 import coup.Effect;
 import coup.Game;
 import coup.Player;
-import coup.cards.Card;
 
 public class Income extends Action {
 	
 	private static final int NUM_COINS = 1;
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Player ai, Character[] cardsToExchange, Game game, boolean theorizing) {
 		instigator = game.findPlayer(instigator);
 //		victim = game.findPlayer(victim);
 //		
@@ -29,17 +29,17 @@ public class Income extends Action {
 	}
 
 	@Override
-	public Card getCard() {
+	public Character getCard() {
 		return null;
 	}
 
 	@Override
-	public Card[] getPossibleBlocks() {
-		return new Card[0];
+	public Character[] getPossibleBlocks() {
+		return new Character[0];
 	}
 	
 	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToChallenge,
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Character[] cardsToChallenge,
 			Game game) {
 		Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
 		ArrayList<Game> list = new ArrayList<Game>();

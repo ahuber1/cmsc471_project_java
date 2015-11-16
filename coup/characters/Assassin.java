@@ -1,10 +1,10 @@
-package coup.cards;
+package coup.characters;
 
 import coup.Block;
 import coup.actions.Action;
 import coup.actions.Assassinate;
 
-public class Assassin extends Card {
+public class Assassin extends Character {
 
 	@Override
 	public String getName() {

@@ -4,23 +4,23 @@ import java.util.ArrayList;
 
 import coup.Player;
 import coup.Utilities;
+import coup.characters.Assassin;
+import coup.characters.Character;
+import coup.characters.Contessa;
 import coup.Effect;
 import coup.Game;
 import coup.Player;
-import coup.cards.Assassin;
-import coup.cards.Card;
-import coup.cards.Contessa;
 
 public class Assassinate extends Action {
 
 	private static final int NUM_COINS = 3;
 	
-	public static void theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToExchange,
+	public static void theorize(Effect parent, Player instigator, Player victim, Player ai, Character[] cardsToExchange,
 			Game game, int numCoins, ArrayList<Game> list) {		
 		if (instigator.numCoins >= numCoins) {
 			Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
 			for (Player otherPlayer : otherPlayers) {
-				Card[] possibleCardsToAssasinate;
+				Character[] possibleCardsToAssasinate;
 				if (cardsToExchange == null || cardsToExchange.length > 1) {
 					possibleCardsToAssasinate = Utilities.getPossibleCardsToAssasinate(game, ai);
 				}
@@ -28,8 +28,8 @@ public class Assassinate extends Action {
 					possibleCardsToAssasinate = cardsToExchange;
 				}
 				
-				for (Card possibleCard : possibleCardsToAssasinate) {
-					cardsToExchange = new Card[1];
+				for (Character possibleCard : possibleCardsToAssasinate) {
+					cardsToExchange = new Character[1];
 					cardsToExchange[0] = possibleCard;
 					Action.theorize(parent, instigator, otherPlayer, ai, cardsToExchange, game, list);
 				}
@@ -37,7 +37,7 @@ public class Assassinate extends Action {
 		}
 	}
 	
-	public static boolean execute(Effect effect, int numCoins, Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public static boolean execute(Effect effect, int numCoins, Player instigator, Player victim, Player ai, Character[] cardsToExchange, Game game, boolean theorizing) {
 		
 		if(theorizing == false)
 			System.out.printf("");
@@ -54,8 +54,14 @@ public class Assassinate extends Action {
 			
 			if (isVictimAgent && !(theorizing)) {
 				
-				Card cardToReveal = Utilities.revealCard(victim, game);				
-				return victim.cards.remove(cardToReveal);
+				int index = Utilities.revealCard(victim, game);
+				if (index > 0) {
+					Character cardToReveal = victim.cards.get(Utilities.revealCard(victim, game));				
+					return victim.cards.remove(cardToReveal);
+				}
+				else {
+					return false;
+				}
 			}
 			else if (isVictimAgent) {
 				return victim.cards.contains(cardsToExchange[0]);
@@ -75,7 +81,7 @@ public class Assassinate extends Action {
 	}
 	
 	@Override
-	public boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Player ai, Character[] cardsToExchange, Game game, boolean theorizing) {
 		return Assassinate.execute(this, NUM_COINS, instigator, victim, ai, cardsToExchange, game, theorizing);
 	}
 
@@ -85,13 +91,13 @@ public class Assassinate extends Action {
 	}
 
 	@Override
-	public Card[] getPossibleBlocks() {
-		Card[] cards = {new Contessa()};
+	public Character[] getPossibleBlocks() {
+		Character[] cards = {new Contessa()};
 		return cards;
 	}
 	
 	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToExchange,
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Character[] cardsToExchange,
 			Game game) {
 		ArrayList<Game> list = new ArrayList<Game>();
 		Assassinate.theorize(this, instigator, victim, ai, cardsToExchange, game, NUM_COINS, list);
@@ -99,7 +105,7 @@ public class Assassinate extends Action {
 	}
 
 	@Override
-	public Card getCard() {
+	public Character getCard() {
 		return new Assassin();
 	}
 

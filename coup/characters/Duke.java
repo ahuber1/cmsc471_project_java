@@ -1,10 +1,10 @@
-package coup.cards;
+package coup.characters;
 
 import coup.Block;
 import coup.actions.Action;
 import coup.actions.Tax;
 
-public class Duke extends Card {
+public class Duke extends Character {
 
 	@Override
 	public String getName() {
@@ -25,7 +25,7 @@ public class Duke extends Card {
 			}
 			
 			@Override
-			public Card getCard() {
+			public Character getCard() {
 				return Duke.this;
 			}
 		};

@@ -3,19 +3,19 @@ package coup.actions;
 import java.util.ArrayList;
 
 import coup.Player;
+import coup.characters.Ambassador;
+import coup.characters.Captain;
+import coup.characters.Character;
 import coup.Effect;
 import coup.Game;
 import coup.Player;
-import coup.cards.Ambassador;
-import coup.cards.Captain;
-import coup.cards.Card;
 
 public class Steal extends Action {
 	
 	private static final int NUM_COINS = 2;
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Player ai, Character[] cardsToExchange, Game game, boolean theorizing) {
 		
 		instigator = game.findPlayer(instigator);
 		victim = game.findPlayer(victim);
@@ -35,18 +35,18 @@ public class Steal extends Action {
 	}
 
 	@Override
-	public Card getCard() {
+	public Character getCard() {
 		return new Captain();
 	}
 
 	@Override
-	public Card[] getPossibleBlocks() {
-		Card[] cards = {new Captain(), new Ambassador()};
+	public Character[] getPossibleBlocks() {
+		Character[] cards = {new Captain(), new Ambassador()};
 		return cards;
 	}
 	
 	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToChallenge,
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Character[] cardsToChallenge,
 			Game game) {
 		Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
 		ArrayList<Game> list = new ArrayList<Game>();

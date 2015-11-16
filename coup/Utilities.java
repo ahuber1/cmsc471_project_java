@@ -12,18 +12,18 @@ import coup.actions.Action;
 import coup.actions.Coup;
 import coup.actions.ForeignAid;
 import coup.actions.Income;
-import coup.cards.Ambassador;
-import coup.cards.Assassin;
-import coup.cards.Captain;
-import coup.cards.Card;
-import coup.cards.Contessa;
-import coup.cards.Duke;
+import coup.characters.Ambassador;
+import coup.characters.Assassin;
+import coup.characters.Captain;
+import coup.characters.Character;
+import coup.characters.Contessa;
+import coup.characters.Duke;
 
 public class Utilities {
 	
 	public static final int MAX_QUEUE_SIZE = 2000;
 	public static final Action[] ACTIONS = {new Income(), new ForeignAid(), new Coup()};
-	public static final Card[] CARDS = {new Duke(), new Assassin(), new Ambassador(), new Captain(), new Contessa()};
+	public static final Character[] CARDS = {new Duke(), new Assassin(), new Ambassador(), new Captain(), new Contessa()};
 	
 	public static <T> Stack<T> copyStack(Stack<T> originalStack) {
 		Stack<T> tempStack = new Stack<T>();
@@ -51,11 +51,13 @@ public class Utilities {
 		return copyStack.pop();
 	}
 	
-	public static Game performMove(Player agent, Game game) {
+	public static Step performMove(Player agent, Game game) {
 		ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
 		q.add(game);
 		Game g1 = performMove(q, game, agent).root();		
-		return g1;
+		g1.restoreStepStack();
+		Step actionStep = Utilities.xthLastItemOfStack(g1.stepStack, 1);
+		return actionStep;
 	}
 	
 	public static int depth = 0;
@@ -118,7 +120,7 @@ public class Utilities {
 					}
 				}
 				
-				for (Card card : CARDS) {
+				for (Character card : CARDS) {
 					Action action = card.getAction();
 					if (action != null) {
 						ArrayList<Game> games = action.theorize(null, p, null, agent, null, g);
@@ -214,12 +216,12 @@ public class Utilities {
 		return copy.executeSteps();
 	}
 	
-	public static Card revealCard(Player player, Game game) {
+	public static int revealCard(Player player, Game game) {
 		ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
-		Card[] possibleCardsToAssasinate = getPossibleCardsToAssasinate(game, player);
+		Character[] possibleCardsToAssasinate = getPossibleCardsToAssasinate(game, player);
 		
-		for (Card possibleCard : possibleCardsToAssasinate) {
-			Card[] cardsToExchange = new Card[1];
+		for (Character possibleCard : possibleCardsToAssasinate) {
+			Character[] cardsToExchange = new Character[1];
 			cardsToExchange[0] = possibleCard;
 			q.addAll(game.stepStack.peek().effect.theorize(null, game.players[game.currentPlayer], player, player, cardsToExchange, game));
 		}
@@ -233,20 +235,80 @@ public class Utilities {
 			if (g1 != null) {
 				for (Step step : g1.stepStack) {
 					if (step.effect instanceof Action) {
-						return step.cardsToChallenge[0];
+						return player.cards.indexOf(step.cardsToChallenge[0]) + 1; // returns 1 or 2
 					}
 				}
 			}
 		}
 		
-		Random random = new Random();
-		return player.cards.get(random.nextInt(player.cards.size())); // return random card from hand; we're going to lose anyway
+		if (player.cards.size() > 0) {
+			Random random = new Random();
+			return random.nextInt(player.cards.size()); // returns 1 or 2
+		}
+		else
+			return -1;
 	}
 	
-	public static Card[] getPossibleCardsToAssasinate(Game game, Player player) {
+	public static Character[] getPossibleCardsToAssasinate(Game game, Player player) {
 		if (game.players[game.currentPlayer].equals(player))
-			return player.cards.toArray(new Card[player.cards.size()]);
+			return player.cards.toArray(new Character[player.cards.size()]);
 		else
 			return Utilities.CARDS;
+	}
+	
+	public static Game blockMove(Step move, Player player, Game game, Player source, Player target) {
+		if (move.effect instanceof Action) {
+			Action action = (Action) move.effect;
+			Character[] blocks = action.getPossibleBlocks();
+			ArrayList<Game> list = new ArrayList<Game>();
+			ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
+			
+			for (Character counter : blocks) {
+				Game gameCopy = new Game(game);
+				gameCopy.clearStacks();
+				gameCopy.stepStack.add(move);
+				list.addAll(counter.getCounteraction().theorize(counter.getCounteraction(), source, move.instigator, 
+						player, move.cardsToChallenge, gameCopy));
+			}
+			
+			// ===========================================================================================================
+			// THIS CODE SHOULD NOT APPEAR IN THE LISP VERSION. HOWEVER, BECAUSE I CONSIDER A CHALLENGE A TYPE OF
+			// COUNTERACTION, WE NEED THIS CODE IN ORDER FOR THE GAME TO END. OTHERWISE, THE GAME WILL NEVER END!
+			// ===========================================================================================================
+			Challenge challenge = new Challenge();
+			Game gameCopy = new Game(game);
+			gameCopy.clearStacks();
+			gameCopy.stepStack.add(move);
+			list.addAll(challenge.theorize(null, source, move.instigator, player, move.cardsToChallenge, gameCopy));
+			// ===========================================================================================================
+			// ===========================================================================================================
+			
+//			Make all the copy games reference the original game
+//			Make copies of all the games
+//			Increment the player in the copies
+//			Distribute coins in the copies
+//			Add the copies to the queue
+//			RUN!
+			
+			for (Game copy : list) {
+				Game copyOfCopy = new Game(copy);
+				copy.parentGame = game;
+				copyOfCopy.parentGame = copy;
+				copy.backupStack();
+				copyOfCopy.incrementPlayer();
+				copyOfCopy.giveCoinsToAllPlayers(2);
+				copyOfCopy.clearStacks();
+				q.add(copyOfCopy);
+			}
+			
+			Game g1 = Utilities.performMove(q, game, player);
+			
+			if (g1 == null)
+				return null;
+			else
+				return g1.root();
+		}
+		else
+			throw new IllegalStateException("The Effect object in actionStep must be of type Action");
 	}
 }

@@ -1,9 +1,9 @@
-package coup.cards;
+package coup.characters;
 
 import coup.Block;
 import coup.actions.Action;
 
-public abstract class Card {
+public abstract class Character {
 	
 	public abstract String getName();
 	public abstract Action getAction();
@@ -16,8 +16,8 @@ public abstract class Card {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Card) {
-			Card otherCard = (Card) obj;
+		if (obj instanceof Character) {
+			Character otherCard = (Character) obj;
 			return this.getName().equals(otherCard.getName());
 		}
 		else

@@ -7,13 +7,13 @@ import coup.Effect;
 import coup.Game;
 import coup.Player;
 import coup.Utilities;
-import coup.cards.Ambassador;
-import coup.cards.Card;
+import coup.characters.Ambassador;
+import coup.characters.Character;
 
 public class Exchange extends Action {
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Player ai, Character[] cardsToExchange, Game game, boolean theorizing) {
 		instigator = game.findPlayer(instigator);
 		
 		if (game.deckOfCards.size() >= 2) {
@@ -41,17 +41,17 @@ public class Exchange extends Action {
 	}
 
 	@Override
-	public Card getCard() {
+	public Character getCard() {
 		return new Ambassador();
 	}
 
 	@Override
-	public Card[] getPossibleBlocks() {
-		return new Card[0];
+	public Character[] getPossibleBlocks() {
+		return new Character[0];
 	}
 	
 	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToExchange,
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Character[] cardsToExchange,
 			Game game) {
 		ArrayList<Game> list = new ArrayList<Game>();
 		Player[] otherPlayers = game.getOtherPlayersExcept(instigator);
@@ -59,7 +59,7 @@ public class Exchange extends Action {
 			for (Player otherPlayer : otherPlayers) {
 				for (int i = 0; i < Utilities.CARDS.length; i++) {
 					for (int j = 0; j < Utilities.CARDS.length; j++) {
-						cardsToExchange = new Card[2];
+						cardsToExchange = new Character[2];
 						cardsToExchange[0] = Utilities.CARDS[i];
 						cardsToExchange[1] = Utilities.CARDS[j];
 						list.addAll(super.theorize(this, instigator, otherPlayer, ai, cardsToExchange, game));

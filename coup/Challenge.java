@@ -2,12 +2,12 @@ package coup;
 
 import java.util.ArrayList;
 
-import coup.cards.Card;
+import coup.characters.Character;
 
 public class Challenge extends Effect {
 
 	@Override
-	public boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing) {
+	public boolean execute(Player instigator, Player victim, Player ai, Character[] cardsToExchange, Game game, boolean theorizing) {
 		instigator = game.findPlayer(instigator);
 		victim = game.findPlayer(victim);
 		
@@ -40,7 +40,7 @@ public class Challenge extends Effect {
 	
 	// Work in progress
 	@Override
-	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToChallenge, Game game) {
+	public ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Character[] cardsToChallenge, Game game) {
 		ArrayList<Game> list = new ArrayList<Game>();
 		if (game.stepStack.peek().effect.getCard() != null) {
 			if (game.players[game.currentPlayer].equals(ai)) {
@@ -63,7 +63,7 @@ public class Challenge extends Effect {
 	}
 	
 	@Override
-	public Card getCard() {
+	public Character getCard() {
 		return null;
 	}
 

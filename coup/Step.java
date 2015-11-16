@@ -2,16 +2,16 @@ package coup;
 
 import java.util.Arrays;
 
-import coup.cards.Card;
+import coup.characters.Character;
 
 public class Step {
 	public Effect effect;
 	public Player instigator; 
 	public Player victim;
 	public Player ai;
-	public Card[] cardsToChallenge; 
+	public Character[] cardsToChallenge; 
 	
-	public Step(Effect effect, Player instigator, Player victim, Player ai, Card[] cardsToChallenge) {
+	public Step(Effect effect, Player instigator, Player victim, Player ai, Character[] cardsToChallenge) {
 		this.effect = effect;
 		this.instigator = instigator;
 		this.victim = victim;

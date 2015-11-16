@@ -5,19 +5,19 @@ import java.util.Random;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import coup.cards.Ambassador;
-import coup.cards.Assassin;
-import coup.cards.Captain;
-import coup.cards.Card;
-import coup.cards.Contessa;
-import coup.cards.Duke;
+import coup.characters.Ambassador;
+import coup.characters.Assassin;
+import coup.characters.Captain;
+import coup.characters.Character;
+import coup.characters.Contessa;
+import coup.characters.Duke;
 
 public class Game {
 	
 	public static enum ExecutionType {ACTION, COUNTERACTION, CHALLENGE};
 	
 	public Player[] players;
-	public ConcurrentLinkedQueue<Card> deckOfCards;
+	public ConcurrentLinkedQueue<Character> deckOfCards;
 	public Game parentGame;
 	public int currentPlayer;
 	public Stack<Step> stepStack;
@@ -35,7 +35,7 @@ public class Game {
 	public Game(Game game) {
 		this.players = copyPlayers(game.players);
 		this.currentPlayer = game.currentPlayer;
-		this.deckOfCards = new ConcurrentLinkedQueue<Card>(game.deckOfCards);
+		this.deckOfCards = new ConcurrentLinkedQueue<Character>(game.deckOfCards);
 		this.stepStack = Utilities.copyStack(game.stepStack); 
 		this.backupStepStack = Utilities.copyStack(game.backupStepStack);
 	}
@@ -81,22 +81,22 @@ public class Game {
 	}
 
 	private void makeDeck() {
-		deckOfCards = new ConcurrentLinkedQueue<Card>();
+		deckOfCards = new ConcurrentLinkedQueue<Character>();
 		
-		Card[] cards = {new Ambassador(), new Assassin(), new Captain(), new Contessa(), new Duke()};
-		ArrayList<Card> unshuffledDeck = new ArrayList<Card>();
+		Character[] cards = {new Ambassador(), new Assassin(), new Captain(), new Contessa(), new Duke()};
+		ArrayList<Character> unshuffledDeck = new ArrayList<Character>();
 		
-		for (Card card : cards) {
+		for (Character card : cards) {
 			for (int i = 0; i < 3; i++) {
 				unshuffledDeck.add(card);
 			}
 		}
 		
-		ArrayList<Card> shuffledDeck = null;
+		ArrayList<Character> shuffledDeck = null;
 		Random random = new Random();
 		
 		for (int i = 0; i < 10; i++) {
-			shuffledDeck = new ArrayList<Card>();
+			shuffledDeck = new ArrayList<Character>();
 			while(!unshuffledDeck.isEmpty()) {
 				shuffledDeck.add(unshuffledDeck.remove(random.nextInt(unshuffledDeck.size())));
 			}
@@ -184,7 +184,7 @@ public class Game {
 				builder.append(String.format("\tNum Coins: %d\n", player.numCoins));
 				builder.append("\tCards:\n");
 				
-				for (Card card : player.cards) {
+				for (Character card : player.cards) {
 					builder.append(String.format("\t\t%s\n", card.getName()));
 				}
 				
@@ -195,7 +195,7 @@ public class Game {
 		
 		builder.append("Deck:\n");
 		
-		for (Card card : deckOfCards) {
+		for (Character card : deckOfCards) {
 			builder.append(String.format("\t%s\n", card.getName()));
 		}
 		
@@ -209,7 +209,7 @@ public class Game {
 			builder.append("\tCards to Exchange:\n");
 			
 			if (step.cardsToChallenge != null) {
-				for(Card card : step.cardsToChallenge) {
+				for(Character card : step.cardsToChallenge) {
 					builder.append(String.format("\t\t%s\n", card.getName()));
 				}
 				builder.append("\n");
@@ -227,7 +227,7 @@ public class Game {
 			builder.append("\tCards to Exchange:\n");
 			
 			if (step.cardsToChallenge != null) {
-				for(Card card : step.cardsToChallenge) {
+				for(Character card : step.cardsToChallenge) {
 					builder.append(String.format("\t\t%s\n", card.getName()));
 				}
 				builder.append("\n");
@@ -280,7 +280,7 @@ public class Game {
 	public boolean executeSteps() {		
 		while(stepStack.size() > 0) {
 			Step step = stepStack.peek();
-			System.out.println(step.effect.getDescription());
+			//System.out.println(step.effect.getDescription());
 			boolean res = step.effect.execute(step.instigator, step.victim, step.ai, step.cardsToChallenge, this, false);
 			
 			if (!stepStack.isEmpty() && stepStack.peek() == step) // If the stack did not change
@@ -290,7 +290,7 @@ public class Game {
 				return false;
 			}
 		}
-		
+		//System.out.printf("***%s***\n", players[currentPlayer].name);
 		return true;
 	}
 }

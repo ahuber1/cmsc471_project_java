@@ -2,14 +2,14 @@ package coup;
 
 import java.util.ArrayList;
 
-import coup.cards.Card;
+import coup.characters.Character;
 
 public abstract class Effect{
 
-	public abstract boolean execute(Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game, boolean theorizing);
+	public abstract boolean execute(Player instigator, Player victim, Player ai, Character[] cardsToExchange, Game game, boolean theorizing);
 	public abstract String getDescription();
-	public abstract ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Card[] cardsToExchange, Game game);
-	public abstract Card getCard();
+	public abstract ArrayList<Game> theorize(Effect parent, Player instigator, Player victim, Player ai, Character[] cardsToExchange, Game game);
+	public abstract Character getCard();
 	
 	@Override
 	public boolean equals(Object obj) {

@@ -5,66 +5,20 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import coup.actions.Action;
-import coup.cards.Card;
+import coup.characters.Character;
 
 public class Player {
 	
-	public ArrayList<Card> cards;
+	public ArrayList<Character> cards;
 	public int numCoins;
 	public String name;
 	public boolean lost;
 	
 	public Player(String name) {
-		this.cards = new ArrayList<Card>();
+		this.cards = new ArrayList<Character>();
 		this.numCoins = 0;
 		this.name = name;
 		this.lost = false;
-	}
-
-	public Game requestCounteraction(Step actionStep, Game game, Player instigatorOfCounteraction) {
-		if (actionStep.effect instanceof Action) {
-			Action action = (Action) actionStep.effect;
-			Card[] blocks = action.getPossibleBlocks();
-			ArrayList<Game> list = new ArrayList<Game>();
-			ConcurrentLinkedQueue<Game> q = new ConcurrentLinkedQueue<Game>();
-			
-			for (Card counter : blocks) {
-				Game gameCopy = new Game(game);
-				gameCopy.clearStacks();
-				gameCopy.stepStack.add(actionStep);
-				list.addAll(counter.getCounteraction().theorize(counter.getCounteraction(), instigatorOfCounteraction, actionStep.instigator, 
-						this, actionStep.cardsToChallenge, gameCopy));
-			}
-			Challenge challenge = new Challenge();
-			Game gameCopy = new Game(game);
-			gameCopy.clearStacks();
-			gameCopy.stepStack.add(actionStep);
-			list.addAll(challenge.theorize(null, instigatorOfCounteraction, actionStep.instigator, this, actionStep.cardsToChallenge, gameCopy));
-			
-//			Make all the copy games reference the original game
-//			Make copies of all the games
-//			Increment the player in the copies
-//			Distribute coins in the copies
-//			Add the copies to the queue
-//			RUN!
-			
-			for (Game copy : list) {
-				Game copyOfCopy = new Game(copy);
-				copy.parentGame = game;
-				copyOfCopy.parentGame = copy;
-				copy.backupStack();
-				copyOfCopy.incrementPlayer();
-				copyOfCopy.giveCoinsToAllPlayers(2);
-				copyOfCopy.clearStacks();
-				q.add(copyOfCopy);
-			}
-			
-			Game g1 = Utilities.performMove(q, game, this);
-			
-			return g1.root();
-		}
-		else
-			throw new IllegalStateException("The Effect object in actionStep must be of type Action");
 	}
 	
 	public Game requestChallenge(Step counteractionStep, Game game, Player instigatorOfChallenge) {
@@ -108,7 +62,7 @@ public class Player {
 	
 	public Player copy() {
 		Player newAgent = new Player(this.name);
-		newAgent.cards = new ArrayList<Card>(this.cards);
+		newAgent.cards = new ArrayList<Character>(this.cards);
 		newAgent.numCoins = this.numCoins;
 		newAgent.lost = this.lost;
 		return newAgent;

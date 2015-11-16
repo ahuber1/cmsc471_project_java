@@ -44,7 +44,7 @@ public class Driver {
 			int counter = 1;
 			while (game.winner() == null) {
 				game = nextIteration(game);
-				//System.out.printf("Iteration Counter: %d\n", counter);
+				System.out.printf("Iteration Counter: %d\n", counter);
 				counter++;
 			}
 			
@@ -52,7 +52,7 @@ public class Driver {
 			timeDifferences = timeDifferences + (endTime - startTime);
 			System.out.printf("%s won!\n", game.winner().name);
 			System.out.println(((endTime - startTime) * 0.001) / 60.0);
-			//System.out.println("----------------------------------------------------------------");
+			System.out.println("----------------------------------------------------------------");
 		}
 		
 		double average = (timeDifferences * 0.001) / 10.0;
@@ -70,15 +70,13 @@ public class Driver {
 	
 	public static Game nextIteration(Game game) {
 		//System.out.printf("It is %s's turn\n", game.players[game.currentPlayer].name);
-		Game action = Utilities.performMove(game.players[game.currentPlayer], game);
-		action.restoreStepStack();
-		Step actionStep = Utilities.xthLastItemOfStack(action.stepStack, 1);
+		Step actionStep = Utilities.performMove(game.players[game.currentPlayer], game);
 		game.stepStack.push(actionStep);
-		Player[] otherPlayers = action.getOtherPlayersExcept(game.players[game.currentPlayer]);
+		Player[] otherPlayers = game.getOtherPlayersExcept(game.players[game.currentPlayer]);
 		ArrayList<Game> counteractions = new ArrayList<Game>();
 		
 		for (Player other : otherPlayers) {
-			Game counteraction = other.requestCounteraction(actionStep, game, other);
+			Game counteraction = Utilities.blockMove(actionStep, other, game, game.players[game.currentPlayer], other);
 			
 			if (counteraction != null)
 				counteractions.add(counteraction);
